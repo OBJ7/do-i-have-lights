@@ -2,6 +2,8 @@
 
 Do I Have Light? is a fast static lookup tool for Ghana load-management schedules. Users can search for an area or use their location to find the likely ECG group and see the related 6-hour light/off-light schedule.
 
+[Live demo](https://obj7.github.io/do-i-have-lights/)
+
 ![Do I Have Light homepage](docs/screenshots/do-i-have-lights-home.png)
 
 ## What this project does
