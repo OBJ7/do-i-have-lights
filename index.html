@@ -1,0 +1,2298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Do I Have Light? Ghana Load Management Lookup</title>
+  <meta name="description" content="Search your Ghana location to find your load management group and 6-hour schedule." />
+  <style>
+    :root {
+      --bg: #f7f3e9;
+      --panel: rgba(255,255,255,.86);
+      --ink: #171717;
+      --muted: #626262;
+      --line: rgba(23,23,23,.12);
+      --gold: #f2c94c;
+      --gold-dark: #b88a00;
+      --green: #0f7a55;
+      --red: #d14a35;
+      --shadow: 0 20px 70px rgba(20,20,20,.12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(242, 201, 76, .38), transparent 30rem),
+        radial-gradient(circle at bottom right, rgba(15, 122, 85, .18), transparent 28rem),
+        var(--bg);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 34px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 5px rgba(242,201,76,.24);
+    }
+
+    h1 {
+      font-size: clamp(40px, 7vw, 82px);
+      letter-spacing: -0.07em;
+      line-height: .92;
+      margin: 18px 0 16px;
+    }
+
+    .hero p {
+      max-width: 660px;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .brand-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 32px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      font-size: 22px;
+    }
+
+    .bulb {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: #161616;
+      color: var(--gold);
+      font-size: 23px;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green);
+      background: rgba(15,122,85,.11);
+      border: 1px solid rgba(15,122,85,.18);
+      border-radius: 999px;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .mini {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 112px;
+    }
+
+    .mini strong {
+      display: block;
+      font-size: 34px;
+      letter-spacing: -.05em;
+      margin-bottom: 4px;
+    }
+
+    .mini span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+
+    .now-panel {
+      margin: 0 0 22px;
+    }
+
+    .now-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .now-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .pulse {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(15,122,85,.12);
+    }
+
+    .now-title {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 42px);
+      letter-spacing: -.055em;
+      line-height: 1;
+    }
+
+    .now-subtext {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+      max-width: 720px;
+    }
+
+    .now-clock {
+      min-width: 174px;
+      text-align: right;
+      padding: 14px 16px;
+      border-radius: 22px;
+      background: #171717;
+      color: #fff;
+    }
+
+    .now-clock strong {
+      display: block;
+      font-size: 22px;
+      letter-spacing: -.04em;
+    }
+
+    .now-clock span {
+      display: block;
+      color: rgba(255,255,255,.68);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .status-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: #fff;
+      padding: 18px;
+      min-height: 160px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .status-card.off {
+      border-color: rgba(209,74,53,.32);
+      background: linear-gradient(180deg, rgba(209,74,53,.10), #fff 78%);
+    }
+
+    .status-card.on {
+      border-color: rgba(15,122,85,.25);
+      background: linear-gradient(180deg, rgba(15,122,85,.09), #fff 78%);
+    }
+
+    .status-card.unknown {
+      background: rgba(255,255,255,.76);
+    }
+
+    .status-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-head strong {
+      font-size: 34px;
+      letter-spacing: -.06em;
+      line-height: 1;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .status-badge.off {
+      color: #8d2b1b;
+      background: rgba(209,74,53,.14);
+      border: 1px solid rgba(209,74,53,.20);
+    }
+
+    .status-badge.on {
+      color: #07583c;
+      background: rgba(15,122,85,.13);
+      border: 1px solid rgba(15,122,85,.20);
+    }
+
+    .status-badge.unknown {
+      color: #5f4a00;
+      background: rgba(242,201,76,.23);
+      border: 1px solid rgba(184,138,0,.18);
+    }
+
+    .status-main {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .status-detail {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .group-status-line {
+      margin: 10px 0 0;
+      padding: 11px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .group-status-line.off {
+      color: #7d2416;
+      background: rgba(209,74,53,.09);
+      border: 1px solid rgba(209,74,53,.17);
+    }
+
+    .group-status-line.on {
+      color: #07583c;
+      background: rgba(15,122,85,.08);
+      border: 1px solid rgba(15,122,85,.16);
+    }
+
+    .group-status-line.unknown {
+      color: #5f4a00;
+      background: rgba(242,201,76,.18);
+      border: 1px solid rgba(184,138,0,.15);
+    }
+
+
+    .lookup {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .panel-inner {
+      padding: 24px;
+    }
+
+    .search-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -.04em;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 6px 0 0;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      width: 100%;
+      appearance: none;
+      border: 1px solid rgba(23,23,23,.16);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 20px;
+      padding: 18px 18px;
+      font-size: 17px;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+
+    input:focus {
+      border-color: rgba(184,138,0,.55);
+      box-shadow: 0 0 0 5px rgba(242,201,76,.25);
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 800;
+      background: #171717;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: #171717;
+      border: 1px solid var(--line);
+    }
+
+    .suggestions {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.14);
+      overflow: hidden;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .suggestion {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      width: 100%;
+      min-height: auto;
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(23,23,23,.07);
+      cursor: pointer;
+      border-radius: 0;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      white-space: normal;
+    }
+
+    .suggestion:hover {
+      background: rgba(242,201,76,.14);
+    }
+
+    .suggestion:last-child {
+      border-bottom: 0;
+    }
+
+    .suggestion b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .suggestion small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .group-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(242,201,76,.28);
+      color: #3b2d00;
+      font-weight: 900;
+    }
+
+    .results {
+      margin-top: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .empty {
+      border: 1px dashed rgba(23,23,23,.22);
+      border-radius: 24px;
+      padding: 22px;
+      color: var(--muted);
+      background: rgba(255,255,255,.45);
+    }
+
+    .match {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 24px;
+      padding: 18px;
+    }
+
+    .match.ambiguous {
+      border-color: rgba(209,74,53,.32);
+      background: rgba(255,255,255,.92);
+    }
+
+    .compare-note {
+      border: 1px solid rgba(209,74,53,.18);
+      background: rgba(209,74,53,.08);
+      color: #7d2416;
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 12px;
+    }
+
+    .match-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .match h3 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.035em;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .slot {
+      border: 1px solid rgba(23,23,23,.08);
+      border-radius: 16px;
+      padding: 11px;
+      background: #fafafa;
+    }
+
+    .slot.today {
+      border-color: rgba(15,122,85,.35);
+      background: rgba(15,122,85,.08);
+    }
+
+    .slot.current {
+      border-color: rgba(209,74,53,.36);
+      background: rgba(209,74,53,.08);
+    }
+
+    .slot strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .slot span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .geo-status {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      min-height: 19px;
+    }
+
+    .geo-status strong {
+      color: var(--ink);
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .notice {
+      padding: 18px;
+      border-radius: 24px;
+      background: #171717;
+      color: #fff;
+    }
+
+    .notice h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -.03em;
+    }
+
+    .notice p {
+      margin: 0;
+      color: rgba(255,255,255,.72);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .legend-row:last-child { border-bottom: 0; }
+
+    .footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .footer a {
+      color: var(--ink);
+      font-weight: 800;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    body {
+      background: linear-gradient(180deg, #ffffff 0, #f4f8f5 320px, #edf4ef 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      height: 5px;
+      background: var(--green);
+    }
+
+    h1,
+    h2,
+    .logo,
+    .mini strong,
+    .now-title,
+    .status-head strong,
+    .status-main,
+    .match h3,
+    .notice h3 {
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: 56px;
+      line-height: 1.04;
+      margin: 20px 0 14px;
+    }
+
+    .page {
+      width: min(1160px, calc(100% - 28px));
+      padding-top: 30px;
+    }
+
+    .hero {
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      max-width: 760px;
+      font-size: 18px;
+    }
+
+    .eyebrow {
+      border: 0;
+      border-radius: 8px;
+      background: #111827;
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .coming-note {
+      margin-top: 14px;
+      color: #395145;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .dot {
+      box-shadow: none;
+    }
+
+    .panel,
+    .brand-card {
+      border-color: #d8ded3;
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 10px 28px rgba(17, 24, 39, .08);
+      backdrop-filter: none;
+    }
+
+    .brand-card {
+      border-top: 6px solid var(--green);
+    }
+
+    .brand-top {
+      margin-bottom: 16px;
+    }
+
+    .logo {
+      font-size: 20px;
+    }
+
+    .bulb,
+    .group-chip,
+    input,
+    button,
+    .suggestions,
+    .mini,
+    .status-card,
+    .now-clock,
+    .match,
+    .empty,
+    .notice,
+    .slot,
+    .compare-note,
+    .group-status-line {
+      border-radius: 8px;
+    }
+
+    .bulb {
+      background: var(--green);
+      color: #ffffff;
+    }
+
+    .status-pill {
+      color: #111827;
+      background: rgba(242,201,76,.42);
+      border-color: rgba(184,138,0,.24);
+    }
+
+    .mini {
+      min-height: 96px;
+      background: #f8faf7;
+    }
+
+    .mini strong {
+      font-size: 19px;
+    }
+
+    .panel-inner,
+    .now-top {
+      padding: 20px;
+    }
+
+    .status-grid {
+      padding: 14px;
+    }
+
+    .status-card {
+      min-height: 132px;
+      padding: 16px;
+    }
+
+    .status-head strong {
+      font-size: 28px;
+    }
+
+    button {
+      min-height: 56px;
+    }
+
+    .notice {
+      background: #111827;
+    }
+
+    .footer {
+      max-width: 1120px;
+      margin: 24px auto 0;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .hidden { display: none; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero, .lookup, .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .eyebrow {
+        flex-wrap: wrap;
+      }
+
+      .now-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .now-clock {
+        width: 100%;
+        text-align: left;
+      }
+
+      .brand-card {
+        order: -1;
+      }
+
+      .schedule {
+        grid-template-columns: 1fr;
+      }
+
+      .search-row {
+        flex-direction: column;
+      }
+
+      button {
+        min-height: 52px;
+      }
+
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* Public-service composition: status and lookup first, supporting context second. */
+    .page {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: min(1180px, calc(100% - 32px));
+      padding: 30px 0 42px;
+    }
+
+    .hero {
+      order: 1;
+      display: block;
+      margin: 0;
+      padding: 30px 0 2px;
+    }
+
+    .hero > div {
+      max-width: 900px;
+    }
+
+    .brand-card {
+      display: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      color: #334155;
+      background: transparent;
+      border: 0;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 18px 0 10px;
+      color: #111827;
+      font-size: 58px;
+      line-height: 1.02;
+      font-weight: 950;
+    }
+
+    .hero p {
+      max-width: 860px;
+      color: #475569;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .lookup {
+      order: 3;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .now-panel {
+      order: 2;
+      margin: 0;
+      border-top: 6px solid var(--green);
+    }
+
+    .footer {
+      order: 4;
+    }
+
+    .panel {
+      border: 1px solid #d6ded2;
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 12px 34px rgba(17, 24, 39, .08);
+    }
+
+    .lookup > .panel:first-child {
+      border-top: 6px solid #111827;
+    }
+
+    .side .panel {
+      box-shadow: none;
+    }
+
+    .panel-inner {
+      padding: 22px;
+    }
+
+    .search-title {
+      margin-bottom: 16px;
+    }
+
+    .search-title h2,
+    .side h2 {
+      color: #111827;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    input {
+      min-height: 58px;
+      border-radius: 6px;
+      border-color: #bcc7b8;
+      font-size: 18px;
+    }
+
+    button {
+      min-height: 58px;
+      border-radius: 6px;
+      background: #111827;
+    }
+
+    button.secondary {
+      background: #f8faf7;
+    }
+
+    .empty,
+    .match,
+    .slot,
+    .notice,
+    .compare-note,
+    .group-status-line,
+    .suggestions,
+    .suggestion,
+    .group-chip,
+    .status-card,
+    .now-clock {
+      border-radius: 6px;
+    }
+
+    .notice {
+      background: #10231b;
+    }
+
+    .notice p,
+    .small,
+    .meta,
+    .status-detail {
+      color: #475569;
+    }
+
+    .notice p {
+      color: rgba(255,255,255,.78);
+    }
+
+    .status-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .source-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .source-strip span {
+      padding: 7px 9px;
+      border: 1px solid #d6ded2;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .quick-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 0;
+    }
+
+    .quick-examples button {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid #cbd8c8;
+      background: #f8faf7;
+      color: #123f2a;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 10px;
+      margin: 0 0 10px;
+    }
+
+    select {
+      width: 100%;
+      min-height: 58px;
+      appearance: none;
+      border: 1px solid #bcc7b8;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 14px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .candidate-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .candidate-choice {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: auto;
+      padding: 12px;
+      border: 1px solid #cbd8c8;
+      background: #ffffff;
+      color: #111827;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .candidate-choice span {
+      color: #475569;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: min(100% - 24px, 680px);
+        padding-top: 24px;
+        gap: 14px;
+      }
+
+      .hero {
+        padding-top: 22px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .lookup {
+        order: 2;
+        grid-template-columns: 1fr;
+      }
+
+      .now-panel {
+        order: 3;
+      }
+
+      .search-row {
+        gap: 8px;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .source-strip {
+        gap: 6px;
+      }
+
+      .source-strip span {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Public load-management lookup</div>
+        <h1>Do I have light?</h1>
+        <p>ECG published a week-long load management timetable across several sheets. This tool lets you search your area, confirm your likely group, and download or share a copy of your schedule timetable.</p>
+        <div class="source-strip" aria-label="Timetable information">
+          <span>Personal timetable starts Monday, 27 Apr 2026</span>
+          <span>Time shown in Ghana time</span>
+          <span>Unofficial lookup aid</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel now-panel" aria-live="polite">
+      <div class="now-top">
+        <div>
+          <div class="now-kicker"><span class="pulse"></span> Current status from the published timetable</div>
+          <h2 class="now-title" id="nowHeadline">Checking current group status...</h2>
+          <p class="now-subtext" id="nowSubtext">This overview updates automatically using Ghana time.</p>
+        </div>
+        <div class="now-clock">
+          <strong id="ghanaClock">--:--</strong>
+          <span>Ghana time (GMT)</span>
+        </div>
+      </div>
+      <div class="status-grid" id="statusGrid">
+        <div class="status-card unknown"><p class="status-detail">Loading group status...</p></div>
+      </div>
+    </section>
+
+
+    <section class="lookup">
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="search-title">
+            <div>
+              <h2>Search your location</h2>
+              <p class="small">Choose a region if you know it, then search your area to get a timetable you can copy, download, or share.</p>
+              <div class="quick-examples" aria-label="Example searches">
+                <button class="quick-example" type="button" data-query="Madina">Madina</button>
+                <button class="quick-example" type="button" data-query="Odorkor">Odorkor</button>
+                <button class="quick-example" type="button" data-query="Tema">Tema</button>
+                <button class="quick-example" type="button" data-query="Dansoman">Dansoman</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="search-wrap">
+            <div class="filter-row">
+              <label class="sr-only" for="regionFilter">Filter by region</label>
+              <select id="regionFilter" aria-label="Filter by region">
+                <option value="">All regions</option>
+              </select>
+              <div class="small">Region filter is optional. It helps narrow duplicate area names.</div>
+            </div>
+            <div class="search-row">
+              <label class="sr-only" for="searchInput">Search your area, town, estate, or landmark</label>
+              <input id="searchInput" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" aria-label="Search your area, town, estate, or landmark" placeholder="Enter your area, town, estate, or landmark..." />
+              <button id="searchBtn">Check area</button>
+              <button id="useLocationBtn" class="secondary" type="button">Use GPS</button>
+            </div>
+            <div id="geoStatus" class="geo-status" role="status" aria-live="polite">GPS is optional and used once in your browser. Your exact location is not saved by this page.</div>
+            <div id="suggestions" class="suggestions hidden" role="listbox"></div>
+          </div>
+
+          <div id="summary" class="results">
+            <div class="empty">No location selected yet. Type at least one letter to see predictive matches.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <div class="panel-inner">
+            <h2>How to read it</h2>
+            <div class="legend">
+              <div class="legend-row"><span>Matched group</span><b>A, B, or C</b></div>
+              <div class="legend-row"><span>Each slot</span><b>6 hours</b></div>
+              <div class="legend-row"><span>Personal view</span><b>From 27 Apr 2026</b></div>
+              <div class="legend-row"><span>Status clock</span><b>Ghana time</b></div>
+              <div class="legend-row"><span>GPS lookup</span><b>Optional</b></div>
+              <div class="legend-row"><span>Share result</span><b>Copy text</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice">
+          <h3>Important</h3>
+          <p>This lookup is based on the published timetable. Treat it as an information aid, not an official notice. Some areas appear as “Parts of...”, so compare nearby landmarks before making critical plans.</p>
+        </div>
+      </aside>
+    </section>
+
+    <p class="footer">Built for fast public lookup and shareable results. Data source: published ECG 800MW load management timetable and grouping file. Personal schedules start from Monday, 27 Apr 2026. GPS area names use <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> reverse geocoding.</p>
+  </main>
+
+  <script>
+    const AREA_BLOCKS = [{"group": "A", "region": "Accra", "areas": "South Odorkor, St. Anthony, Lawyer Kom, Baah Yard, Odorgonno, Awoshie Massalatsi, Victory Bible Church, Been-To, Parts of Trasacco Estates, Parts of Zoomlion, Obinim, , Parts of Airport Residential Area, Opeibia, Coffee Farmers Association, Dr. Atekpe, Adabraka Free Town, Catholic Book Centre, Government Boys, GNTC Bottling, Nayak, Dome New Market, Agingo, Taifa, Nkatie Burger, Mr. Adjei, Demod, Hotel Adodo, CMB Flats, Olebu, Canada City, New Ayawaso, Amamole, Ayigbe Town, Zoti, Parts of Lartebiokorshie, Alogboshie, Neoplan, Best Point, West Africa Décor, Kaneshie Flats, St. Theresa, Cocoa Clinic, Accra Sound, Kaneshie Sports Complex, Parts of Kokomlemle, Mallam Atta Market, Parts of Accra New Town, Timber Market, Parts of Asylum Down, Gye Nyame Hotel, NPP Office, Agoro TV, Makola, Angelina House, Tudu/Aflao Station, UMB Bank, Liberty House, Parts of Katamanto, Swam Mill, PZ, Wato, Charles Lane, James Town Police Station, Akotoku Academy, Pig Farm, Kotobabi Police Station, Club 1000, Expo 67, Abavana, Parts of Kotobabi Polyclinic, Asofa, Amen Amen, Seven Days, Atta Mills, Parts of Ofankor, Amelia, Pokuase Interchange, Agya Herbal, Ofankor Railway Bridge, Congo Junction, Burma Camp Goil Filling Station, Parts of Palm Wine Junction, Rawlings Circle, Madina Market, Madina Mosque, Parts of Maye Hot, Atomic Junction, North Legon, Ghana Hostels, Libya Quarters, Washington, Parts of Nsawam Township, Oparekrom, Adoagyiri, Abotsi Hanya, Awula Wulu, Ayalolo, Aboma, Parts of Greda Estates, Pentecost University, Israel, Parts of Alhaji, Parts of Sowutuom, Antieku, Baron, Amrahia, Danfa, Otinibi, Parts of Malejor, Amanfro, Zenith College, Exzorpa, Tseaddo, New England, Chain Homes, Madina Estate and its environs, Legon Hills, Santoe, eshie Nungua Estaes, Parts of Adogonno, 1st Junction, Telecom, Wele, Akoto Bu, Heritage Tower, Ecobank HQ, Ridge Tower, College of Physicians & Surgeons, Pegasus, World Bank, Ringway Estates, Parts of NIC, Joma Township, Ablekuma Agape, Suncity, Adwensa Publication, Adenta Estates, Commando, New Legon, Lotto Kiosk, Paa Willy Junction, Parts of Mataheko, Adeiso, Coaltar, Otoase, Krabokese, Marfokrom, Fankyenekor, Kofi Quaye, Dorkotwoa, Nkran, Forest Hotel, Agorwu, Sasaabi, Kpone Seduase, Valley View University, Oyibi, Apollonia, Pantang Hospital, Nyamekrom, Parts of Abokobi, Oxford Street, Kalamazoo, Bosomtwi Hotel, Beijing Clinic, Ablekuma Tigo pole, Borkorborkor, Manhia, Afoaman, Afiaman, CP, Maame Nkran, Part of Joma, Mayera, Denu, part of Kuntunse, Amasaman, Fise, part of Toman, Part of Okponglo, Erata Hotel, Part of East Legon, Bawaleshie, Madina, PRESEC, UPSA, Pentecost Hospital, Social Welfare, TV Africa, Danafco, Fan Milk Annex, SSNIT Archives, Part of Kwashieman, Nii Boye Town, Abrantie Spot, Lapaz, King of Kings, Parts of Odorkor Alabama, Darkuman Mosque, Darkuman Quarters, Parts of Accra New Town, Asantewaa Hotel, Raaco, Kpehe Catholic Church, Police Depot, Armoring, Police Detective Academy, GTUC Campus, Parts of Tesano, Agya Herbal, John Teye SHS, Ayigbe Park, Parts of Ofankor, Kwabenya Adom, Azonto, Seven Days, Police Quarters, Capital Hill, Parts of Asofa, Hallem, Joe Joe, Emmanuel Eye Clinic, Legon, Mensvic Hotel, Ecole Francaise, Kings Cottage, Maxixis Tires, Western World Trading, East Cantonment, Max Mart, Butler Lines, Opeibea, Japan Motors, Lakeside Community 1 & 8, Saphier Plastics, Mallam Junction, Sotrec, Jayee University, Menskrom, Sakaman, Mallam Market, Blue Lagoon, Parts of Dansoman SSNIT Flats, Parts of Sukura, Parts of Lartebiokorshie, Parts of Appiah Danquah, Zamrama Line, Adjirigannor, Islamic University, NTHC Estates, Parts of America House, National Archives, Parts of Adabraka, Ministry of Information, Teachers Hall, Adabraka Methodist, Ashongaman Estates, Obaahemaa, Aggies Spot, Parts of Atomic Commission, Dome Pillar, Atomic Guest House, Konka, Asafo Adjei, Sawmill, Independence Square, Osu Anglican, Photo Club, Tiokor, Parts of Osu Oxford Street, La T-Junction, La Palm Royal Beach Hotel, La Beach Hotel, Regimanuel Grey HQ, Agyeman, La Cemetery, Palm Wine Junction, Kojo Sardine, Nativity, Fan Milk, Agbeve Top, Ablekuma Abease, Abibiman School, Atico, Parts of North Kaneshie, Parts of New Fadama, Chief Iman, St Ann\"s School, Daily Foods, Winners Chapel, Dark Mark, City Appliance, Parts of Abossey Okai, Ayigbe Town, Sabon Zongo, Okponglo Booster Station, North Dzorwulu, Accra Shopping Mall, Woolworth, Polo Court, Aviation House, Villagio, Africa Regency Hotel, Airport West Hotel, Mataheko Police Barracks, Bella Hotel, Gloriland Hotel, Arts Commercial Centre, KNUST Campus, Abuom, Bethel, Comet Estates, Bank of Ghana Quarters, Katapor, Second Chance, Adusa Quarters, Dedeman, Pito House, Fulgrip, NADMO, PH Hotel, Parts of America House, Kofi Capito, Otieshie, Ogbojo CSIR and its environs, Abofu, New Achimota Station, Parts of Greda Estates, Dar Es Salam, Composite Site, Sea Lady, Manna Mission Hospital, Tseaddo, Camp 2, Rasta, Teshie Demo, Tebibiano, , Parts of Nmai Djorn, Parts of Legon Hills"}, {"group": "A", "region": "Volta", "areas": "Adidome Township, Akyemfo, Mafi Anfoe, Mepe Dagorme, Adexor, Battor Gbagbavuinu, Depe, Kpando Technical, KPASEC, Kpando Township, Kudzra, part of Kpando Towns, Ve - Golokwati, Fume, part of Nyagbo towns, Logba Towns, Part of Jasikan Township, Apenkwa, Bodada Towns, Bowiri Towns, Anfoeta Towns, Dzolokpuita,  Amedzofe, Dzologborgame, Kpedze Towns, Shiave, Nyive, Matse, Klefe Towns, Ziavi Towns, Microwave, Alayi, Soldiers Barracks, Akpenamawu, Da abra, Police depot, Akoefe, Kpenoe, Hodzoga, Tanyigbe, Part of Mafi Towns, Aflao Township, and Cross border Towns, Kudje, Worawora, Tapa Amanya, Kwamekrom, part of Asiekpe, Kutime, Adaklu Sofa, Adaklu Waya, Kpoeta, part of Hohoe, Kpoeta and it's surroundings."}, {"group": "A", "region": "Ashanti", "areas": "Parts of Ejisu, Kokobra, Deduako, Asamang, Domeabra, Apromase, Kokoben,  Donyina, Appiadu, Trabuom, Manso-Nkwanta, Boko, Twedie, Foase, Antoakrom, Seidi, Chicks & Chicken, Amankyea, Essuowin, Esaase Bontefofum, Mpatuom, Ahwerewa, Aboabo Tetekaso, Tetrem, AkataneaseNweneso, Odahu, Atwire, Abore, Moseaso, Kronom Cement, Heman, Amoaman, Adankwame, Kokote, Abira, Namong, Takyeman, Denkyembouso, Ohwumasi, Hill Top, Part of Asouyeboa, Part of Tanoso, Topreso,   Moshie Zongo, Airport, Part of Pankrono, Part of Ahwia, Kuma, Apromoase, Krapa Oldtown, Krapa, Part of Ejisu, Bampenase, Adubenso, Adubensokese, Swedru, Adubensobea, Aboabogya, Bomfa, Adumakasekese, Sewaba, Asabi, Asokore Mampong, Part of Paakoso, Part of Affordable Housing,Akokoamon, Kyerekrom, Ekyem, Parkoso, Aprede, BRRI, CRI, Akorem, Adukrom, Dagomba line, Oforikrom, STC, Onwe,  Ejisu Sec. Tech, Asounipon, Donaso, Achina, Deduako, Asamang, Justice Hotel, Amakom, Stadium, St. Paul Sch, Awuna Fanti Newtown,Krofrom, Ampabame, Afrancho, Kantenkyiren, Kyerensa, Bedase, Adwampong, Ahwiaa Town,Cultural Centre, Komfo Anokye SHS, GBC, Asafo Dadesoaba,T.I. AMASS, Home tourch, Baso Club, Stadium, Kontonpo, Sepetinpome, Asori Nkwanta, Limex, Dote, Part of Duase, Konongo, Juaso, Part of Low Cost, Freetown, Abosomtwigya, Yawkwei, West Coast, Asikafuoambantem, Nkwanta, Obogu, Dubi, Saabo, Subinso, Kumeaboe, Takwae, Yaw Asare, Koikrom, Dwendwenase, Ataneata, Atwedie, Asankare, Bompata, Adanse, Breku, Asuobua, Dampong , Asokwa Oldtown, Asokwa Pentecost, Staduim Hotel, Asokwa Sobolo, Yaw Nkrumah, Bomfa, Asotwe, Akyeakrom, Forestry Sch., Juaben, Yabi, Merewadwa, Aburaso, Kromoase, Maase, Adwenase, Taabom, Aboaboga, Essen, HyewhyewAkyeremade, Chichibon, Gyekye, Dida, Wawase, Antobuase, New Nsuta, Zongo, Amangoase, Kulamu, Gausu, Koffiekrom, Sec Tech, Forestry, Nyameso, Bediem, Ofori Stadium, Anyinam, Anwonakrom, Apitikooko, Apitiso No. 1 & 2, Suhyenso, Akaako, Agyeikrom, Mile 9,Twepease, Mile 14, Edwinase, Atabrakoso, Kwame Tanokrom, Oseikrom, Fenaso Nkwanta, Aboayeikrom, Abubuasin, Menakrom, Gyankobaah,Nerebehi, Nfensi, Asafo, Asafo Market, Baso Club, Brigina, Tarkwa Maakro, Mpatasie, Anomangye, Part of Magazine, Old & New Suame, Part of Abrepo, Part of Bohyen, Sawaba, Denase, Abenkyim, Anwiankwanta, Awhia, Dominase, Bhenase, Ntinanko, Poano, Daa, Apaaso, Asanso Senfi, Adjemesu, Ofoase Kokoben, Abono, Obo, Nyametiase, Nkoainkwata, Abretwen, Kuwait, Naachia, Sawua and its environs, Aprabon, Mamponteng, Agona, Nsuta, Kumawu, Mampong, Effiduase, Ankaase, Breman, Part of Kronum, Kronum Kwapra, Afrancho, Sepaase, Edwanfo, Afari, Nkawie, Nerebehi, Hiawu-Besease, Abuakaw-Makro, Asikuma Town, Mfuom, Babianiha."}, {"group": "A", "region": "Tema", "areas": "Leisure Hotel; Nungua Zongo; Kpeshie Police Headquarters; Coco Beach; Father's Hotel; Mobole; Afienya Taxi Station; Toll Booth; Emmanuel Estates; Hot Oven;Ablekuma; CAC Imperial Peking, China Mall; Kaketo, Okro Market; Asensu Bar; Apenyo; Valco Flats; Leonardo; Adjetey Ansah; Manheam SHS; Naval Base; Abonko, Tema New Town Lorry Station;  Comm 19; Bugain; Awudu Issaka;St Barkita; Sethi Realty, Abodakpi Farms, MTN Junction; Ghana Steel; Kpone Dump Site; Kpone Kokompe, Ososhie, Magna Terris, Adom Estates, Agbamami; Avnash Residence; Wilmar Residence,  BBC, Comm. 2 Police Station; TDC Shops; Mirabake; Kan Em; TT Brothers; Macbaron Charlets; BOST, Frenchman; Supreme Gas, Ashaiman Timber Market; Middle East; Home and Away; Methodist Junction, ICGC; Crystal Medical Center; Datus; Comm. 7; Jericho; Roman Down; Under Bridge Market; State School for the Deaf; Safisana; Kanawu; Adjei Kodjo Township; BBF; parts of Comm. 17; Bake Shop; Timber Market; Resolve Hospital; Baatsonaa Government School; Kyereme Junction; Marina Mall; Baatsonaa Total; Sydal Farms; Japan City; Adjei Kodjo, Global, Teteman; Emef Estates, Lashibi; Vodafon; Celebrity Golf Club; Sakumono Village; Sakumono Estates, High Tension; Buena Vista Homes; Fridays; Njoy Hotel; Agortor; Shiloh;  Luta; parts of Comm. 25; Bediako; High Tension; Sackey; Golf City Police Station; Kent Estates; HFC Estates; John Grey Estates; ARS Church; Mt Carmel; Kakalika Plaza; Standard Chatered Bank; Shell Signboard; Kpogas; New Ningo, Old Ningo; Nungua Secondary School; Channel 5; Zimmerman Presbyterian Church, Nungua Town Park, Italian Boys' Pub, Latter Day Saints; Methodist junction; Kpoo Keke; Best Premier Hotel; Nungua Nshornaa; Fuel Trade; Chase Petroleum; WAPCo; Aunty Kate; Bankuman; Naval Quarters; Tema International School, Don Bosco; Bethlehem; Sebrepor; White Estates; Emef Estates, Goshen; Gbetsile and its environs"}, {"group": "A", "region": "Western", "areas": "Diabene, Nkroful, Kansawurodu, Ntankoful, Mt. Zion, Race course, Whindo, Inchaban, Nyankrom, Shama junction, Shama, Aboadze, Abuesi, Dixcove, Busua, Cape 3 point, Mpanyiasa, Prestea township, Mankesim, Enyinam,  Pewodie, Nyinawusu, Diaso, Juabo, New Obuasi, Ntom, AgonaPort, Ankwaso, Benchema, Asafo,"}, {"group": "A", "region": "Eastern", "areas": "Kowf Hotel, Starting Point, etc, Spredigle, ECG District Office, Regional Hospital, Anlo town, Charlie Junction, VHF, Srodai, Central Market, Roman, etc, Amanase, Kyekyewere, Budu, Teacher Mantey, Koans Estate, Signboard, etc, Kusi, Kade, Okumaning, etc, Obo, Obomeng, etc, Joe Oduro and its environs, Osabene township, Yaa Botwe, Kentenkeren, Capital View Hotel, etc, Eastern Premier Hotel, Adweso SSNIT Flat, KTU, Capital View Annex, Universal School, Monrovia, etc, Part of Okorase, Domeabra etc, Part of Bunso, Nsutam, Abompe, Osino, Saaman, Anyinam, Kwabeng, Mouso, Akim Tafo Township, CRIG, Tontro, Perchie, Maase, etc.Awenare, Abesim, etc, Part of Abepotia, Wisiwisi, Noyem, Gyamaase, Pra River, Kwame Dottoh, Akoase, Larbikrom, Abirem, etc, Tafo Sabon Zongo, Nobi, Samresi, Nsutapon, Klo Agogo, Boti Falls, Huhunya, Asesewa, Akateng, Nkurakan, Valley Safari, and surrounding areas."}, {"group": "A", "region": "Central", "areas": "Ajumako township,Enyan Denkyira,Kwamakese, Anomabo township,Briwa,, Obokor, Essueshia, Eyisam, Nakwa,Ataabadze,Twaa, Atwaa,Saltpond township, Ankaful, Saltpond hospital,Anokyi,Abonko,Mfanstiman Girls,Mankessim township, Dominase Kyeakor, Kwasi Ansa,By- Pass, Kormaste, Anomabo, Ekrabadze, Amoada, Adambo,Jukwa, Effutu, Heman, Bremang,Abrafo, Assin Fosu township,Abura Dunkwa, Fante Nyakumase, Yomoransa, Asebu, Edumfa, Assin North and South, Manso"}, {"group": "B", "region": "Accra", "areas": "Abossey Okai, Zongo Junction, Kaneshie Orange Market, Parts of Lartebiokorshie, IBE, Parts of Mamprobi, Akoshie Junction, Kamara, Tot-To Teen School, SDA Junction, La Nkwantana, Akatsi Abor, Power Line, Special Ice, Ayi Mensah, Ghana Flag, Special Drink, Oyarifa, Obeyeyie, Akramaman, Yahoman, Ayikai Doblo, Pobiman, Treba, Parts of Greda Estates, Tsui Bleoo, Agblezaa, Tebibiano, Yomo Specs, Akuaba Estates, Brekusu, Agyemanti, Comet Estates, Atinka Media, Aburi Sec. Tech, Ahwerease New Site, Ahwerease Teachers Bungalow, Lord Care cold store, Alioma, Kingsway, Japan Embassy, Korea Embassy, Miklin Apartments, Food Research, Kukuhill, Morning Star, Trinity Seminary, Mempeasem, UG Business School, Atraco, UPSA Hostel, Nsawam Prisons, Parts of Doblo, Hebron, Agya Appiah, Blue Skies, , Ashale Botwe Old Town, Little Roses, Parts of Nanakrom, Pentecost Down, Okpoi Gonno, Parts of Adjorman, , Marvel House, Adjoa Wangara, Knight Court, Embassy Hotel, Dubois Center, American Embassy, Arabian Embassy, France Embassy, Ghana International School, Mamobi, Accra Girls, Kotobabi., Oyarifa, Township, Ashieye, Aseidu Nketia, Gravel Pit., Regimanuel Estates Spintex Rd., Parts of Odorkor, Parts of Odorkor Official Town, Junction, Great Garden, Mangoasie, Parts of Kwashieman, Parts of Official Town , Parts of Kwashieman, Parts of Santamaria, Kwashiebu, Race Course, Tabora, Parts of Alhaji, Bantsi asi, Kingsway, F. Malawi, Goil HQ, Central Police Station (MTTD), AirtelTigo HQ, Musuku, Oscar, Point 1, Balloon Gate, Stages, Haatso Yam Market, Emefa Jewelleries, Legon Botanical Gardens, Peduase Lodge, Kitase, Ahwerease, Aburi SHS, Ayim, Ashongman Village, Pure Water, Ashongman City, Gbawe Bulemi, Gonse, Djaman, Oblogo, Parts of Weija Dam Site, Ghana Standard Authority, Obama Hotel, Parts of Okonglo, GS Plaza, Gecko, Golf House, National Identification Authoruty, CSIR, Nitra, EPPL, Terry Cot, Century Industries, Parks & Shops, Kokompe, Parts of Darkuman, Agbogbloshie, Abossey Okai Central Mosque, Sikkens, , Pure Fire, Christian Village, Golf Park, Sober, Kisseiman, Parts of Westland, Haatso Trotro Station, Brainy Brain School, Hydrofam Estates, Frempongmaa Estates, Parts of Okpoi Gonno, , Association International School, Parts of Airport Residential Area, Newmont Ghana, Falcon, , Gold House, CSIR, WAEC, Cedar Court, Capital Place, Tang Palace Hotel, Mplaza Hotel, Bostal, Roman Ridge Shopping Arcade, DevTraco Estates, Twumasiwaa Hospital, Djen Ayor, Fa Asem Kyea, Parts of Ogbojo, Local Government, Twuamasiwaa Rounabout, ARS, Parts of Lartebiokorshie, Appiah Danquah, Flamingo, Radio Gold, Parts of Dome, Ikam, Asene Household, Kumbaya Hotel, Francisca Tower, Vodafone, Multi TV, Parts of Kokomlemle, Horizon Finance Levsing Co., GWC La, Akrowa House, La- T junction., Labone, La Wireless Station, Alisa Hotel, Parts of Nanakrom, Nmai Djorn, School Junction, Akweteman, Bambolino, Shaaba, Parts of Abeka Free Pipe, Mama's Inn, Dansoman Keep Fit, SSNIT Flats, King Solomon, Otorjor, Movenpick, Accra City Hotel, Supreme Court, Fast Track Court, Opera Square, Ghana Post, M&G Pharmaceuticals, Oceanic Resort, New Bortianor, Osiadan, Dunkona, Red Top, New Aplaku, Kings University, Burger Town, Parts of Abokobi, Teiman Township, Okponkpo, , Abloradjei, part of Akporman, Top Herbal, Bohye, Wisconsin University, Busy Internet, GRA, Niagara, part os Asylum Down, Providence Tower, Iran Clinic, Nkrumah Circle, GCB Tower, Ayalolo, Diamond House, Registrar General, Ghana News Agency, Fulani, Tuba, Langba, Kokrobitey, Achimota Market, Naa Densua, Achimota Halt Tower, , Banana Inn, Mabruk Park,part of Zabrama Line, Osofo Dadzie, Mascot, Mamponsee, Village Gate, Pantang Junction, Focos Hospital, Shalom Estates, Parts of Abokobi, Kottam Estates, WAEC, Swiss Embassy, Alisa Hotel, Diamond Ridge, AU Estates, North Ridge Hotel,, Accra High School, NHIS HQ, MTN HQ, Merchant Bank, Alisa Village, Latter Days Saints, Parts of Nyamekye, MAB Hospital,, Kwashie-Bu,Parts of Anyaa, Nsumfa, NIC Top, Parts of Sowutuom, Seminary, Omanjor, VRA Flats, Mambo Spot, Agape Junction, B-Opoku, Sahara, Dr. Beechem, Control Market, Kit-Kat, Parts of Dansoman, Mars Junction, Russia, Sukura Market, Lonso Park, Epo, Trust Hospital, Osu Entertainement, Parts of Osu Oxford Street, Koala, Citien Kofi, Coffee Shop, Labone GNTC, , VRA Flats , Cantonment, BOG Hospital, NAFTI, Mechanization, Kwabina Adjei Homes., Ashiye, Fulani, TseAddo"}, {"group": "B", "region": "Volta", "areas": "Oklahoma, Lolobi Towns, Likpe Towns, Ayoma Towns, Baglo Lakanti, Kute Buem Tetema, Akpafu Adorko, Cross border Towns, Agorpenu, Sogakope township,  Dabala Town, Adutor, Tsavanya, Tordzinu, Klotekpo, Gafatsikope, Torve, Logokukope, Akatsi Township, Live Towns, Dzrakate, Atidzive, Abor, Tadzewu, Avalavi, Fodome Towns,  part of Liati Towns, Gbledi Towns, Wli Towns, part of Kpando Towns, Akaa Towns, Alavanyo Towns, Nkonya Towns, Gbi Akplamafu, Hedzranawo, Adina, Kedzi, Agavedzi, Keta, Kadjebi, Asato, Mount Sinai, part of Jasikan, Nkwanta,  part of Ho Township, Part of UHAS main campus, Adaklu Kodzobi, Sokode Lokoe, part of Sokode Gborgame, Akrofu, Abutia, Rainbow, Aflao Lowcost, Agbokope, Beach, Avoeme, Awakome, Denu Lowcost, Tsito Township and it's surroundings."}, {"group": "B", "region": "Ashanti", "areas": "Moinssi Valley, Akrofuom, Jimiso, Jimiso Kakraba, Part of Bekwai Township, Low Cost Est., Korkyerekrom, Kwabetusu, Anita Hotel, Besease, Breman Nkwantwima, Part of Kronum, Sasa, Bouho, Brofoyedru, Ampabame, Bodwesango, Petransa, Bomso, Akyena, Atrama, Egyakon BouhoI&II, Magazine, Tafo New Road, Tafo Nhyiaeso, Tafo, Adagya, Esereso, Jachie, Pramso, Abramkese, Gh.Water Office-Suame, A-Lang, Parts of Magazine, Odeneho Kwadaso, Agric Amanfrom, Santasi Apire, Old & New Suame, Odeneho Kwadaso, Agric Amanfrom, Wawase, Kwabrafoso, Tutuka, Aboagyekrom, Wawase, Kwabrafoso, Tutuka, Aboagyekrom, Boete, Lowcost, Brahabebume, Atoplans, Bossman, Abuakaw-Makro, Asonomaso, Manhyia, Koforidua, Tabre, Akwabuah, Ntensere, Mfensi, Asakraka, Part of Brofoyedru, Deeper Life Kwamang, Sanfo Aduam, Adumasa, Kokotro, Essiase, Wood village, Bost, Sokoban, Asaago,  Odenehu Kwadaso, Atasomanso, Part of Santase, Adiebeba, Ahodwo, Melcom, Fankyenebra, Odenehu Kwadaso, Atasomanso, Part of Santase , Akrowa, Kodie, Apagya, Akrofrom, Patasi, Aduman, Aduamoah, Denase, Akom, Nkwntakese, Pampatia, Sepaase, Edwanfo, Afari, Nkawie,  Hiawu-Besease,  Gyankobaah, Mpasatia, Mankranso, Kunso, Boatenkrom, Arokrom, Goigoikrom, Bonkwaso, Pampaso, Worakese, Kwaso, Essienimpong, Agya Appiah, Camp, Part of Brofoyedru, Deeper Life Camp, Kotwi, Nkransa, Habitat, Bekwame, Kyekyewere, Part of Kokoben, Kokoben Ebenazer, Kotwi, Nkransa, Atimatim Abrafi, Part of Fawoade, Asenua, Part of Meduma, Meduma Abass, Habitat, Bekwame, Kyekyewere, Part of Kokoben, Kokoben Ebenazer, Kontomire, Dwenenh, Asempenaye, Akaporiso, Pomposo, Asonkore, Abusco, Deawuoso Ayiase, Boete, Lowcost, Brahabebume, Atoplans, Bossman, Akaporiso, Pomposo, Asonkore, Abusco, Deawuoso Ayiase, Santasi Apire, Part of Kropo, Kuntenase, Tafo Zongo, Westley Girls Sch., Moro Market, Menhyia, Bronkra, Part of Santasi, Fankyrenbra, Kaasi, Ahinsan, Coca Cola, Ash Foam, BLLC, Appiah Menkah, Abattoir, Bomplex, Opoku Transport, Odenehu Kwadaso, Ampabame, Atia, Kentinkrono, Maxima Junction, Ayegya Est., Part of Affordable Housing, Ayegya Zongo, Christian Village, Santasi, Anyinam, Part of Kokoben, Santasi ApireAmangoase, Nsenie, China Estate, Bonfa, Pepedan, Esumaja, Sebedie, Kokofu, Asankari, Okyerekrom, Wamasi, Asanso, SDA SHSch, Zongo, Amoafo, Abodom, Koniyaw, Asokore, Daimond hotel, Yenyawoso, CPC, Dichemso, Agona, Kumawu, Effiduase,Agona, Nsuta, Mampong, Kyekyewere, Adoato, Abrepokese, Asubonteng, Ohwum, Amanfrom, Adomanu, Nyankerenease, Bokankye, Kokosu,  Town, Part of Fawoade, Part of Asendua, Ahwiaa Newsite, Ahwiaa Overseas, Ahwiaa Adabraka, Part of Medoma, Buabenso, Buaben, Bekwai Bungalow, Nampansa, Amansie, Asiebu, Anwiam, Part of Abirem, Abirem Zongo, Antoa, Adesina, Sisikro, Bodoma, Amponya, Ataase, Afoako, Homase, Bekrose, Adubrem,Penipa, Asikuma, Esereso,"}, {"group": "B", "region": "Tema", "areas": "TIS Basic School, Comm. 22; Michell Camp; Movelle; European Market; Comm 17; Fafali; HFC Estates; Cambodia; Santor; Agbeshie Laryea; Aunty Araba, Nelplast; Kubekro; Level 400; Katamanso; Gbetsile; Official Town; Christian Village; Clementina; Ashaiman Circuit Courts; Temascho; Church of Brotherhood; Charyass, Railway Quarters, Comm. 5; Aponkye Clinic; Irrigation; Central University; Ghanaman Soccer Academy, Noble Estates; Ghana Water(Prampram); Tsopoli, Dawa, Sege, Kaseh, Big Ada, Ada Foah, Totope, Treasure Island, Aqua Safari; Lele Salt; Palace Mall; Lovely; Kpone Barrier; Frenchman; Supreme Gas, Ashaiman Timber Market; Middle East; Home and Away; Motorway Total; Alisa Hotel; Square D; VEHOCS; Ltd; Abbattoir;  Motorway Axle Station SRG Klagon; NutriFoods; Toyota Ghana Ltd; Abbattoir; Comm. 8, B’S Maternity; ; Akrade; Senchi; Atimpoku; Akwamufie; Juapong; Volo; Fintey; Frankadua; Nudu, Kisifui, African Fish; Anum; Boso; Dodi Asantekrom; Full Gospel Church, Comm. 12; Youth With a Mission; FOS Aluminium; Tanink; Salvation Army, Comm. 12; Akuaba Estates, Jehova Witness Assembly Hall; parts of Coastal Estates; Adotey; Prampram Junction; City Escape; Potter’s City; Abia, Prampram Township; Kpoi Ete; SSNIT Flats Comm. 5; Valco Residence; SOS Village; parts of Comm. 10; SOS; Rama Down; Able Academy School; Timber Market; Mavis Industries; Comm. 25 Mall; Polystar; Maranatha Church; LEKMA Polyclinic; Adogonno; Glow Lamp; Frimpamaa Estates; Abrantie; Dan Adams; First Choice; Basket; parts of Coastal Estates;  and its environs"}, {"group": "B", "region": "Western", "areas": "amreaboi, Mumuni, Atobrakrom, Woman no good, Yerase,  Akoon, New Atuabo, Cyanide, Kwabedu, Cape town, Budo City, Afere, Bodi, Aheinbenso, Akontombra,  Essae, Wiawso, Bawdie, Ankosia, Adamanso, Asikuma, Wassa Akropong, Saamaang, Afransie, Wassa Saa, Wassa Japa, Nanankor,Nkonya, Bogoso township, Kokoase Adjeikrom, Oppon Valley, Awudua, Samahu, Himan township, Brumasi, Duamasi, Kwemeniapa, Ghana gas, Afuke, Dadieso, Bonsu Nkwanta"}, {"group": "B", "region": "Eastern", "areas": "Asamankese township, Yayo, etc, Part of Asamankese town, Pinora Industries, etc, Bunso Lindador, Forest Gate, Adukrom, Asikam, Agyepongmaa, Kibi, Nkronso, Potroase, Pano, Akooko, etc, Bepong, Asakraka, Kwahu Tafo, Ankoma, Kotoso, Miaso, etc, Krofofrom, Teacher Atta, Akroso, Agona Ninta, Asouso, Akim Koforidua, Bantama, etc, Nkawkaw Novotex, Amanfrom, Saafi, Awenade, Apradang, Fodua, Besease, Dadieso, Kwahu Praso, etc, Bunso Ayigbe town, Ettukrom, Osiem, Bosuso, Hemang, Koradaso, Begoro, Obourho, etc, Ofoase, Ayerebi, Etwereso, Gyadam, Nkwateng, etc, Adweso, Abogiri, Two Streams, Trom, Medical Village, Ghalloway, Agavenya, Korle Nkwanta, etc, Nkawkaw Trador, Oframase, Mpraeso Amanfrom, Jejeti towns, Kwahu Nsabah, Asuboni Rails, Akim Sekyere, Enyiresi, etc, Roman, Jamaica, Zongo, etc, ECG District Office, Kofigya, Abenabo, Akorabo, Akote, Jato, Amanhyia, etc."}, {"group": "B", "region": "Central", "areas": "ECG Main Office, Ashanti Road, Brofoyedur, Idan Nstin, Ekon, Reg office, Chapel Square, Petrol, Bakano, Kotokruba Market,Jubilee Sch, Acquairium,Bakano,St, Augustine,Ola Estate,UCC,Industrial Estate,Radio Central, Sikafoambatem,Siwidu ,compoud, Adisadel Estate, Industral Area, West End, Mfanstipim Flat, 4th Ridge,Pedu Junction,Pedu township, Kakumdo,Esuakyir,1st,2nd,3rd Ridgs,Nkanfoa,Central Rgional Hospital. Eguase, Moree, Adukrom, Akroma, Ayensodo,Kissi,Komenda, Agona, Brase, sekyere Hemang,Bronyibima,Sanka,, Attabadze town and Village, Elmina town,Bamtama,Akwanda,Brenu Akyem, Peshie,Elmina Shell,, Iture, African Pot, Amamuma,Duakro,Part of Ola township,Elmina Zongo, SNNIT Flat,Atonkwan,Amoada, Nkontrodo,Amisano, Abie, Ankaful Mental, A,kaful Prisons Manso, Kushia, Assin North & South,Dompim, Awuroso, Assin Fosu town"}, {"group": "C", "region": "Accra", "areas": "Parts of Airport Residential Area, Diplomatic Shop, Sam Jonah, Airport View Hotel, Parts Adabbraka, Dan's Bar, Adabraka Methodist, Parts of Asylum Down, Parts , Geological Survey. Parts of West Ridge, Best Cuisine, Atomic Commission, Haatso Ecomog, , Parts of Dome Pillar, K, Boat, Zita Lane, Paradise Lodge, Mallam Abease, Parts of McCarthy Hill, Gbawe Zero, Top Base, Parts of Gonse, Salaga Market, Parts of James Town, Cadbury, Interprise Insurance, Baiden Powers, La Beach Road, Family Health Hospital, Teshie Maami, Speedy, Flower Pot, Palace Mall, Oak Plaza Hotel, Sonitra, Parts of Airport Hills, Bubiashie Cable & Wireless, Ayigbe Town, Morning Star School, Labone, Achimota School, Achimota Police Station, McBright Tower, Choice, Shikpontele, Toman, Parts of Pokuase Township, Parts of Pobiman, Agya Appiah, Ecoblock, SEL Filling Station, Fountain Gate, Parts of John Teye, Franko Estates, Chorkor, Agege Lorry Park, Chemuanaa, Sempe, Dan Wright, Korle Gonno, St Mary SHS, Mile 7, Maple Leaf, Parts of New Achimota, Petroleum, Kinsby, Parts of Nii Boi Town, New Achimota, Chantan, Shiabu, Dansoman Beach Road, Gbegbeyisee, Tesano, Parts of Alajo, Charleston Hotel, Santana Market, De-Georgia Motors, Letap Jewelleries, Beyeeman, Princess Coldstore, Honda Place, Parts of South Industrial Area, Children Hospital, Timber Market, Palladium, Katamanto Market, Ebony, Kotobabi Down, Abavana Down, Agbadzenaa, Nkansah Djan, Ayidiki, Parts of Dorwulu, Abelemkpe, Pere Dome, Parts of Alajo, Marwako, Special School, Nsawam Market, Nsawam Hospital, Nsumia, Mikado, Akramaman, Sakyikrom, Anoff, Piabor, Morning Star School, Prisons, Police Hospital, Forestry Commission., Teiman Township, Burgar Town, Bawaleshie and its enirons, Madina Social Welfare, Maye Hot and uts environs, Vineyard, 3rd Gate, Aviation, Peace Be, Parts of Ashale Botwe, Parts of Maye Hot, Frafraha, Rowi Junction, Mother Love, Ampomaa Estates, Dobro, Sapeiman, Amasaman, Opah, Ablorman, Tenor, Africola, Hebron, Satelite, Fair Heaven, Community 5, Rojo Roso, Lake Community 8., Sraha, St. Peters, Parts of Ashale Botwe, Nsakina New Town, Peace Village, Dromonaa, Obeng City, Oshuman, Ga-Odumase, Nyamekye, Part of Fadama, Eno Mirekua , KPOGAS, Part of Lorgotsu-shie, part Agyeman, La Presby, Part of Ofankor, Muus, Bulk Press, Part of Tantra Hill, Spot M, Part of Ofankor, SSNIT Flat Tantra Hill, St. John, Akokor Photo, KFC, SDA Southern HQ , BOG Flats at Mataheko, Sakoa Press, Part of Flamingo, Awoshie Baah yard, Mangoase, A- Lang, New Gbawe, Odorgonnor, Part of MacCarthy Hill, Weija Junction, Tetegu, Part of Sampa Valley, Dodowa Hospital, Ayikuma, Doryimu, Kordiabe, Agormeda, Gegedekum, Jarpanya, Apese, , Ayigbe Town, SCC, Parts of Weja, Gicel, Choice, Mandela, GBC Quarters, Mile 11, Broadcasting Last Stop, Parts of Bortianor, American, Flag, Kasapa, Dorwulu, Bayere Junction, Sid Studio, Reservoir, Absolute Furnitures, Petroleum Commission, Paloma, Nima, Frankies, Nima Gutter, Nima Rounabout, Nima Market, Quality Insurance, Mogya Biedon, ,Glefe, Wiaborman, Ebenezer SHS, Atomic Hotel, Petroleum, Dansoman Last Stop, Village Gate, Mamponsee, Karikari Brobbey Park, , Awoshie Water Works, Sakaman Junction, Mallam Market, Parts of Gbawe, Janus Ltd, Gyamfi Apartment, Lecacy Closet, Kofi Baako, National Security Communication bureau, Zanzibar., New TseAddo, New England, Tebibianor road, Kordjor area, Tebibiano Masalatsi area, Parts of camp 2 taxi rank last stop, Boshye, Academic City University , Ajirigannor, Coffee Shop, Abeka Market, Eno Mirekua, Asare Original Pay All, Parts of New Fadama, Adom Clinic, La Wireless, Labone, Teiman, TseAddo, Rosa Rosa, Kotoku, Medie, Blue Skies, East Legon Hills, Fair Heaven, Soja Line, Lake Side Comm. 8, Katamanso, Paradise Estate, Regimanuel, Adom Gate., Ayi Mensah, Danfa, Parts of Oyarifa, , Agyeman Katta, A Line, Rehoboth Estate, Wisdom Square, Buo Town, Comet Estate, Firestone, Madina Zongo Junction, Massalatsi, RedCo Flats, Jehovah Witness"}, {"group": "C", "region": "Volta", "areas": "Tokor, SPACO, Kopeyia,  Dzodze, Ave towns, Nogokpo, Agbozume, Dzaglame,  Klikor,Weta towns, Taskcorner, Ehi towns, Afiadenyigba, Nakyikope, part of Akatsi Towns, part of Ho Township, Wumenu,  Agotime towns, Kpetoe, Agorhokpo, Agorhome,  Sarakope,  Batume junction, Akpokope,  Ziope towns, Agonu towns, Honugo,  Keklebesi, Bedzame, Part of Hohoe Township, Waterworks, part of Oklahoma, Sovie, Anfoega towns, Aveme towns,  Vakpo, Wusuta towns, Tsrukpe towns,  Comboni, Agordome, Kepnu, Agorta, Svietula, Angloga, part of Keta, Worawora, Kabusu, Apesukobi, Ayeremu, Katanga, Asukokoo, Dormabin, Dambai, Kpando Todzi, Kpando Togorme, Torkor, Kpeve Township, Kpalime Duga, Toh Duga Tsibu, South Dayi, New Kaira, Dzemeni, Peki and it's surroundings."}, {"group": "C", "region": "Ashanti", "areas": "Abakomade, Part of Abuakwa, Part of Tanoso, Paramount, Formulation, St. Elizabath, Keesben Est. Ensonyameye, Adwumam, Adwumam Newsite, Part of Fawoade, Adagya, Esereso, Zoom Lion Factory, Sesease, KMA Residency,Tigo Main Office, Nhyayeso, Asawase Market, Zaabo Zongo, Roman Girls, Akawatia-Line, Afia Kobi Market, Cocoa Clinic, A-life, Part of Adum, Railways Co., Bompata, Fanti Newtown, K Poly, Part of Asafo, Alabar, Part of Ashtown, KO, Mbrom,Yegola Hotel, KTI, Roman Hill, Town hall, SIC, Zongo Police Station, Part of Central Market, Afia Kobi Market, Cocoa Clinic, A-life, Part of Adum, Railways Co., Bompata, Fanti Newtown, K Poly, Part of Asafo, Dakwadwum, TUC, Fankyenebra, Teacher Nkwanta, Kenkaese, KTI, Dwansa, Agogo, Part of Low Cost, Nyaboo, Atonsu, Petransa, Kokoase Mines, Bimma, Obenemase, Asonkore, Alhaji Awal, Kwabemnakwa, Mampamhwe, Nyamesomye, Domeabra, Tewobebi, Nyamebekyere, Nyakumasu, Denase, Asokwa, Breman UGC, Atimatim, Atimatim Chairman, Atimatim Bronkrom, Atimatim Newsite, Part of Pankrono, Pankrono Abed, Adukrom, Dagomba line, Oforikrom, STC, Maxima, Bomso, Susanso, Susanekyre, Awunaga, Bantama, Race Course, Kajetei, Cultural Centre, Junction, Aboabo, Asawasi, Akawatia-Line, Hwiremoase, Kyiraburoso, Bronikrom, New Edubiase, Fumso, Boadi, Emina, Ayeduase, Apemso, Deduako, Anhiwiaso, Praso, Ataase Nkwanta, Apagya, Nsuta, Boko, Atobiase, Nkranfo Nkwanta,Atwereboma, Ayanfuri Town, Dominase, Nkotimso, Breku, Pipiiso, Atetem, Atonsu S-line, Gyinyase, Kotei, Charpatre, Part of Ahinsan, Ahinsan Est., Adukrom, Dagomba line, Oforikrom, STC, Maxima, Bomso, Susanso, Susanekyre, Awunaga, Kwadaso, Kwadaso Nsoum,  Asuoyeboa, SSNIT Flat, UCE-K'si, Tanoso, Pokukrom, Apatrapa, Bodwesango, Piase, Deduako, Mim, New Brodakwaw, Beposo, Kwadaso Estate, Patase, Police Depot, Santase Roundabout, Edwinase, Asare Farms, Nimo, Kwadaso Ohwumase, Part of Kwadaso, Africa, Bomfa, Peminase, Akronwe, Esaase, Wabiri, Asiwa, Appantubuom, Kokoben, Adeito, Anyanso, Fereboye, Ofoase, Boankra Port, Hwereso, Kubease, Duapopom, Koforidua, Nobewam , Konkori, Kwanwoma, Asaago, Pakyi No. 1&2, Int. Comm. Sch., Kwadaso Market, CAC University, Nyameani, Domeabra, Kyekyebiase, Pekyerekye, Akutuase, Wioso, Dwereso, Hwidiem, Behwe, Kenyase, Kenyase Tewubabi, Part of Abirem, Bosore, Akate Farms, Nwamase, Brofoyedu, Garden City, Duase, Kronom, Sepe, Buokrom, Airport Round-about, Pankrono Est., Agya Appiah, Buokrom Est., Buokrom South Africa, Truba, Abouhia, Breman West, KNUST, Ayigya ECG Dist Office, Banivillas Hostel, Ghana Hostel, Georgia Hostel, Crystal HostelAbusuakruwaRoman Hill, Town hall, SIC, Zongo Police Station, Part of Central Market, Nwamasi, Apire, Henman, Bebu, Dako, Adumasa, Brofoyedru, Ampabame No.1&2, Mpatase,Trede, Sabin Akrofrom, Fumesua, Kwamo, Kwamo Highways, Parts of Ejisu, Bebre, Kokobra, Emuye, Bedieso, Mensakrom, Gausu, Kunka, Nana Ponko, New Dochiwaa, Dadwene, Kyekyewere Barrier, Adwumam, Adwumam Newsite, Part of Fawoade, Sesease, Teacher Nkwanta, Kenkaese, Council Quarters, Kwapia, Akrokerri Training College, Old Akrofuom, Bobrase, Akoowaso, Hemang, Bribiwormang,"}, {"group": "C", "region": "Tema", "areas": "OLAM SHS; Comm 4; Joe Manu; , Lashibi ; Klagon; Comm. 19 Annex; EMEF Estates; ECG Flats; GNPC Flats; IMaH; Comm. 3;  Sites A & B, BNI Flats; MEDASS; TOR Flats; Adom FM; Cocobod Flats; VRA/GRIDCo Flats; Womens' Hospital; parts of Comm. 11; Nuaso; Agomanya; St Martins' Hospital; Lower Manya District Assebly Ofice; ; Lebanon Zone 3; Zenu; Atadeka; Legacy Girls; Ghana Prisons; Asutsuare; Golden Exotics; Volivo, Shai Osudoku, Commandos Military Training Camp; Comm. 25; Bulasu; Ghana Flag; Casilda Estates; Afienya Zongo; Dawhenya Township; Abbey Kope; Saglemi Housing; Pharmanova, Lakpleku, Boiko, Bundase Military Training Camp; Afariwaa Junction; Yellow Signboard;Michell Camp Gate; Kakasunaka #1, Gbetsile Junction; Gbetsile Lorry Station; Soldier Line; Comm. 11; Ashaiman New Town; Valco Flats Market; parts of Jericho; Odumse; Christian International School; Fiankonya; parts of Mobole; Otsebreku; Okushibri; Apollonia; Jerusalem; Katamanso; Promised Land; Data Center Elegant Homes; P. S Global; Devtraco Estates; ; Kpone Affordable Housing; Shang Hai; Kpone Township; PUMA Filling Station; C&J Medical Centre; Spintex Junction; KFC; Texpo; Akorley Township, Akorley Booster Station, Adukrom Pumping Station; Ahwiam, Magotsonya; Goi, Kportitse Kope, Songo Salt; ; Lashibi Funeral Homes; Vivian Farms, Buena Vista Homes (Beach Drive); Posilipo; Regional Maritime University; Jomef; Okro Garden; Vodafone; Comm 9 Market and its environs"}, {"group": "C", "region": "Western", "areas": "BU Junction, Repso hills, Fijai, Adiembra, Kweikuma, New site, New Amanful, Takoradi Beach road, Dupaul, Apremdo, Whindo, Assakae, Adientem, Mpatado, Sikafoabantem no.3, Takoradi police reserve, Collins Avenue, Apowa, Kejebir, Mpohor, Adum Banso, Breman, Kwabeng, Agona, Gyeduakese, Moseasu, Dominase Nkwanta, Nkroful, Telekubokazo, Asasetre, Bamiako. Amanteng, Manso, Akontombra, Juaboso"}, {"group": "C", "region": "Eastern", "areas": "Oda Quarters, Akim Swedru SHS, Asikuma, Amanfopong, Duakon, etc, Nkwatia, Abetifi, Pepease, Hweehwee, Sempoa, Abene, Ankaase, etc, Bula Spot, Effiduase, Asokore, GHANASS, Bohye, Zongo, Pipeline, OBOSS, Magazine, Wawaso, etc, Suhum township, Akwatia No.4, Anweaso, Atiankama Nkwanta, etc, Timber Market, Achiase, ECG District Office, Part of Nkawkaw township, etc, Asoukaw, Mepom, Nyanoa, Esaaso, etc, Nyankomase, Osenase, Kubriso, Akanteng,etc, Part of Old Estate, Paradise, Residency, Eredecs, PURC, Atekyem, Nyamekrom, Densu, etc, Part of Okorase, Tei-Nkwanta, Tinkong, Konko, Asasekorkor, Adukrom Nyensi, Adawso, Mangoase, Kwamoso, etc, Akim Oda Post Office, Number 9, Police Barracks, Community 6, Aperade, Osorase, Achiase, etc."}, {"group": "C", "region": "Central", "areas": "Akosua Village, Esukyir, Ghaadze, Okyereko, Breku, Senya, Bonsuoko, Gomoah Fetteh, Akoti,Ojobi,Winger, Kontokole, Part of Mellennuim City,Estate, Adamukrom,, New Castle,Menges,Sandema,Blue Kiosk, Teacher Block Factory,Anigye-Krom, Opeikuma,Asamoa,Part of Colombo,CP, Lawyer, Nyanyanu,Yoo Mart,Budunburam,Nkwantenan,, Tipper Junction,Roman, Evalip,Wallantu,Gateway, Newtown,Kuwait, Galilea Market, TV3, 94 Washing Bay, New Mrket, Opeikuma, American town, Colomba,Congo Villa,Akweley, Otta City, Top town,Nurses quarters,Denchira, Domeabra,KpormoteyAshalaja."}];
+    const SCHEDULE = [{"date": "Saturday, 25/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "A"}, {"date": "Sunday, 26/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "B"}, {"date": "Monday, 27/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "C"}, {"date": "Tuesday, 28/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "A"}, {"date": "Wednesday, 29/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "B"}, {"date": "Thursday, 30/04/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "C"}, {"date": "Friday, 01/05/2026", "period": "DAY (06:00AM TO 12:00PM)", "group": "A"}, {"date": "Saturday, 25/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "B"}, {"date": "Sunday, 26/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "C"}, {"date": "Monday, 27/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "A"}, {"date": "Tuesday, 28/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "B"}, {"date": "Wednesday, 29/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "C"}, {"date": "Thursday, 30/04/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "A"}, {"date": "Friday, 01/05/2026", "period": "DAY (12:00PM TO 6:00PM)", "group": "B"}, {"date": "Saturday, 25/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "C"}, {"date": "Sunday, 26/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "A"}, {"date": "Monday, 27/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "B"}, {"date": "Tuesday, 28/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "C"}, {"date": "Wednesday, 29/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "A"}, {"date": "Thursday, 30/04/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "B"}, {"date": "Friday, 01/05/2026", "period": "NIGHT (6:00PM TO 12:00AM)", "group": "C"}, {"date": "Saturday, 25/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "A"}, {"date": "Sunday, 26/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "B"}, {"date": "Monday, 27/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "C"}, {"date": "Tuesday, 28/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "A"}, {"date": "Wednesday, 29/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "B"}, {"date": "Thursday, 30/04/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "C"}, {"date": "Friday, 01/05/2026", "period": "NIGHT (12:00AM TO 6:00AM)", "group": "A"}];
+
+    const normalise = (value) => String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\b(parts?|part)\s+of\b/g, "")
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const splitAreas = (text) => String(text || "")
+      .split(/[;,]+/)
+      .map(x => x.replace(/\s+/g, " ").replace(/^[\s,;.-]+|[\s,;.-]+$/g, ""))
+      .filter(Boolean)
+      .filter(x => x.length > 1)
+      .filter(x => !["etc", "and environs", "environs", "and its environs", "its environs"].includes(x.toLowerCase()));
+
+    const ENTRY_KEY = (entry) => `${normalise(entry.name)}|${entry.region.toLowerCase()}|${entry.group}`;
+
+    const ALL_ENTRIES = (() => {
+      const seen = new Set();
+      const output = [];
+      AREA_BLOCKS.forEach(block => {
+        splitAreas(block.areas).forEach(name => {
+          const entry = {
+            name,
+            region: block.region,
+            group: block.group,
+            search: normalise(name),
+            raw: name
+          };
+          const key = ENTRY_KEY(entry);
+          if (!seen.has(key)) {
+            seen.add(key);
+            output.push(entry);
+          }
+        });
+      });
+      return output;
+    })();
+
+    const byGroup = (group) => SCHEDULE.filter(slot => slot.group === group);
+
+    const prettyPeriod = (period) => String(period)
+      .replace("DAY ", "")
+      .replace("NIGHT ", "")
+      .replace(/[()]/g, "")
+      .replace(" TO ", " - ");
+
+    const todayToken = () => ghanaParts().token;
+
+
+    const GHANA_TIMEZONE = "Africa/Accra";
+    const GROUPS = ["A", "B", "C"];
+    const PERSONAL_TIMETABLE_START_MS = Date.UTC(2026, 3, 27, 0, 0, 0);
+    const REVERSE_GEOCODE_ENDPOINT = "https://nominatim.openstreetmap.org/reverse";
+    const REVERSE_GEOCODE_CACHE_PREFIX = "dihl.reverse.";
+    const REVERSE_GEOCODE_CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+    const REVERSE_GEOCODE_PRECISION = 3;
+
+    const ghanaParts = (date = new Date()) => {
+      const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: GHANA_TIMEZONE,
+        weekday: "long",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).formatToParts(date).reduce((acc, part) => {
+        if (part.type !== "literal") acc[part.type] = part.value;
+        return acc;
+      }, {});
+
+      let hour = Number(parts.hour);
+      if (hour === 24) hour = 0;
+      return {
+        weekday: parts.weekday,
+        dd: parts.day,
+        mm: parts.month,
+        yyyy: parts.year,
+        hour,
+        minute: Number(parts.minute),
+        second: Number(parts.second),
+        token: `${parts.day}/${parts.month}/${parts.year}`
+      };
+    };
+
+    const ghanaNowMs = (parts = ghanaParts()) => Date.UTC(
+      Number(parts.yyyy),
+      Number(parts.mm) - 1,
+      Number(parts.dd),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second)
+    );
+
+    const scheduleDateParts = (slot) => {
+      const match = String(slot.date).match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if (!match) return null;
+      return { dd: Number(match[1]), mm: Number(match[2]), yyyy: Number(match[3]), token: `${match[1]}/${match[2]}/${match[3]}` };
+    };
+
+    const periodRange = (period) => {
+      const p = String(period || "").toUpperCase();
+      if (p.includes("12:00AM TO 6:00AM") || p.includes("12:00AM TO 06:00AM")) return { startHour: 0, endHour: 6, dayOffset: 1 };
+      if (p.includes("06:00AM TO 12:00PM") || p.includes("6:00AM TO 12:00PM")) return { startHour: 6, endHour: 12, dayOffset: 0 };
+      if (p.includes("12:00PM TO 6:00PM") || p.includes("12:00PM TO 06:00PM")) return { startHour: 12, endHour: 18, dayOffset: 0 };
+      if (p.includes("6:00PM TO 12:00AM") || p.includes("06:00PM TO 12:00AM")) return { startHour: 18, endHour: 24, dayOffset: 0 };
+      return { startHour: 0, endHour: 0, dayOffset: 0 };
+    };
+
+    const enrichSlot = (slot) => {
+      const date = scheduleDateParts(slot);
+      const range = periodRange(slot.period);
+      if (!date) return { ...slot, startMs: 0, endMs: 0, range };
+      const startMs = Date.UTC(date.yyyy, date.mm - 1, date.dd + range.dayOffset, range.startHour, 0, 0);
+      const endMs = Date.UTC(date.yyyy, date.mm - 1, date.dd + range.dayOffset, range.endHour, 0, 0);
+      const actual = ghanaParts(new Date(startMs));
+      return { ...slot, dateToken: actual.token, startMs, endMs, range };
+    };
+
+    const SCHEDULE_TIMELINE = SCHEDULE.map(enrichSlot).sort((a, b) => a.startMs - b.startMs);
+
+    const startOfNextGhanaDayMs = () => {
+      const p = ghanaParts();
+      return Date.UTC(Number(p.yyyy), Number(p.mm) - 1, Number(p.dd) + 1, 0, 0, 0);
+    };
+
+    const futureSlotsByGroup = (group) => {
+      const nowMs = Math.max(ghanaNowMs(), PERSONAL_TIMETABLE_START_MS);
+      return SCHEDULE_TIMELINE
+        .filter(slot => slot.group === group && slot.endMs > nowMs)
+        .sort((a, b) => a.startMs - b.startMs);
+    };
+
+    const futureScheduleLabel = () => {
+      const p = ghanaParts();
+      return `Showing current and upcoming timetable slots from ${p.dd}/${p.mm}/${p.yyyy} Ghana time. Personal schedules start from Monday, 27/04/2026.`;
+    };
+
+    const formatGhanaTime = (ms) => new Intl.DateTimeFormat("en-GB", {
+      timeZone: GHANA_TIMEZONE,
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    }).format(new Date(ms)).replace(/am/i, "AM").replace(/pm/i, "PM");
+
+    const formatGhanaDateTime = (ms) => new Intl.DateTimeFormat("en-GB", {
+      timeZone: GHANA_TIMEZONE,
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    }).format(new Date(ms)).replace(/am/i, "AM").replace(/pm/i, "PM");
+
+    const formatSlotDate = (slot) => new Intl.DateTimeFormat("en-GB", {
+      timeZone: GHANA_TIMEZONE,
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }).format(new Date(slot.startMs)).replace(/\//g, "/");
+
+    const formatGhanaClock = () => new Intl.DateTimeFormat("en-GB", {
+      timeZone: GHANA_TIMEZONE,
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    }).format(new Date()).replace(/am/i, "AM").replace(/pm/i, "PM");
+
+    const nextSlotForGroup = (group, nowMs = ghanaNowMs()) =>
+      SCHEDULE_TIMELINE.find(slot => slot.group === group && slot.startMs > nowMs) || null;
+
+    const groupStatus = (group) => {
+      const nowMs = ghanaNowMs();
+      const current = SCHEDULE_TIMELINE.find(slot => nowMs >= slot.startMs && nowMs < slot.endMs) || null;
+      const next = nextSlotForGroup(group, nowMs);
+
+      if (current && current.group === group) {
+        return {
+          state: "off",
+          label: "SCHEDULED OFF",
+          main: `Group ${group} is scheduled off now`,
+          detail: `Expected back around ${formatGhanaTime(current.endMs)} if the published timetable is followed.`,
+          current,
+          next
+        };
+      }
+
+      if (current) {
+        return {
+          state: "on",
+          label: "NOT SCHEDULED OFF",
+          main: `Group ${group} is not scheduled off now`,
+          detail: next ? `Next scheduled outage: ${formatGhanaDateTime(next.startMs)} - ${formatGhanaTime(next.endMs)}.` : "No further outage for this group appears in the published table.",
+          current,
+          next
+        };
+      }
+
+      return {
+        state: "unknown",
+        label: "OUTSIDE TABLE",
+        main: `Group ${group} status not active in table`,
+        detail: next ? `The next listed outage is ${formatGhanaDateTime(next.startMs)} - ${formatGhanaTime(next.endMs)}.` : "The published timetable does not cover the current time.",
+        current: null,
+        next
+      };
+    };
+
+    const isSlotCurrent = (slot) => {
+      const nowMs = ghanaNowMs();
+      const enriched = enrichSlot(slot);
+      return nowMs >= enriched.startMs && nowMs < enriched.endMs;
+    };
+
+    function renderNowOverview() {
+      const grid = document.getElementById("statusGrid");
+      const headline = document.getElementById("nowHeadline");
+      const subtext = document.getElementById("nowSubtext");
+      const clock = document.getElementById("ghanaClock");
+      if (!grid || !headline || !subtext || !clock) return;
+
+      const nowMs = ghanaNowMs();
+      const current = SCHEDULE_TIMELINE.find(slot => nowMs >= slot.startMs && nowMs < slot.endMs) || null;
+      clock.textContent = formatGhanaClock();
+
+      if (current) {
+        const onGroups = GROUPS.filter(group => group !== current.group).join(" and ");
+        headline.textContent = `Group ${current.group} is scheduled off now`;
+        subtext.textContent = `Groups ${onGroups} are not scheduled off in this slot. Current slot: ${formatGhanaDateTime(current.startMs)} - ${formatGhanaTime(current.endMs)}.`;
+      } else {
+        headline.textContent = "No active outage slot found";
+        subtext.textContent = "The published timetable covers 25 Apr - 1 May 2026. Outside that window, users should check the latest official notice.";
+      }
+
+      grid.innerHTML = GROUPS.map(group => {
+        const status = groupStatus(group);
+        return `
+          <article class="status-card ${status.state}">
+            <div class="status-head">
+              <strong>Group ${group}</strong>
+              <span class="status-badge ${status.state}">${status.label}</span>
+            </div>
+            <p class="status-main">${escapeHtml(status.main)}</p>
+            <p class="status-detail">${escapeHtml(status.detail)}</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    const scoreEntry = (entry, query) => {
+      if (!query) return 0;
+      if (entry.search === query) return 100;
+      if (entry.search.startsWith(query)) return 92;
+      if (entry.search.split(" ").some(w => w.startsWith(query))) return 84;
+      if (entry.search.includes(query)) return 70;
+      return 0;
+    };
+
+    const selectedRegion = () => regionFilter?.value || "";
+
+    const regionMatches = (entry, region = selectedRegion()) =>
+      !region || entry.region.toLowerCase() === region.toLowerCase();
+
+    const findMatches = (queryText, limit = 80, region = selectedRegion()) => {
+      const q = normalise(queryText);
+      if (!q) return [];
+      return ALL_ENTRIES
+        .filter(entry => regionMatches(entry, region))
+        .map(entry => ({ ...entry, score: scoreEntry(entry, q) }))
+        .filter(entry => entry.score > 0)
+        .sort((a, b) => b.score - a.score || a.region.localeCompare(b.region) || a.name.localeCompare(b.name))
+        .slice(0, limit);
+    };
+
+    const input = document.getElementById("searchInput");
+    const regionFilter = document.getElementById("regionFilter");
+    const suggestions = document.getElementById("suggestions");
+    const summary = document.getElementById("summary");
+    const searchBtn = document.getElementById("searchBtn");
+    const useLocationBtn = document.getElementById("useLocationBtn");
+    const geoStatus = document.getElementById("geoStatus");
+
+    function initialiseRegionFilter() {
+      if (!regionFilter) return;
+      const regions = [...new Set(ALL_ENTRIES.map(entry => entry.region))]
+        .sort((a, b) => a.localeCompare(b));
+      regionFilter.innerHTML = `<option value="">All regions</option>${regions.map(region => `<option value="${escapeHtml(region)}">${escapeHtml(region)}</option>`).join("")}`;
+    }
+
+    function renderSuggestions() {
+      const matches = findMatches(input.value, 16);
+      if (!input.value.trim() || matches.length === 0) {
+        suggestions.classList.add("hidden");
+        suggestions.innerHTML = "";
+        input.setAttribute("aria-expanded", "false");
+        return;
+      }
+
+      suggestions.innerHTML = matches.map((m, index) => `
+        <button class="suggestion" type="button" role="option" data-index="${index}">
+          <span><b>${escapeHtml(m.name)}</b><small>${escapeHtml(m.region)} Region</small></span>
+          <span class="group-chip">${m.group}</span>
+        </button>
+      `).join("");
+
+      suggestions.querySelectorAll(".suggestion").forEach((el, index) => {
+        el.addEventListener("click", () => {
+          const selected = matches[index];
+          input.value = selected.name;
+          suggestions.classList.add("hidden");
+          input.setAttribute("aria-expanded", "false");
+          renderResults(selected.name, selected);
+        });
+      });
+
+      suggestions.classList.remove("hidden");
+      input.setAttribute("aria-expanded", "true");
+    }
+
+    function displayKey(entry) {
+      return `${normalise(entry.name)}|${entry.region.toLowerCase()}`;
+    }
+
+    function groupAwareDedupe(items) {
+      const seen = new Set();
+      const output = [];
+      items.forEach(item => {
+        // Same area + same region + same group is a true duplicate.
+        // Same area + same region + different group is intentionally kept.
+        const key = ENTRY_KEY(item);
+        if (!seen.has(key)) {
+          seen.add(key);
+          output.push(item);
+        }
+      });
+      return output;
+    }
+
+    function renderResults(queryText, selected = null) {
+      const rawMatches = selected
+        ? [selected, ...findMatches(queryText, 60).filter(m => ENTRY_KEY(m) !== ENTRY_KEY(selected))]
+        : findMatches(queryText, 60);
+
+      const matches = groupAwareDedupe(rawMatches);
+
+      if (!queryText.trim()) {
+        summary.innerHTML = `<div class="empty">No location selected yet. Type at least one letter to see predictive matches.</div>`;
+        return;
+      }
+
+      if (matches.length === 0) {
+        summary.innerHTML = `<div class="empty">No match found for <b>${escapeHtml(queryText)}</b>. Try a nearby landmark, old spelling, junction, estate name, or simply the first few letters.</div>`;
+        return;
+      }
+
+      const q = normalise(queryText);
+      const exactMatches = matches.filter(m => m.search === q);
+      let display = exactMatches.length ? exactMatches : matches.slice(0, 8);
+
+      // If a location name appears in multiple groups, keep all those group variants together.
+      const selectedDisplayKey = selected ? displayKey(selected) : null;
+      const sameNamedCrossGroupMatches = selectedDisplayKey
+        ? matches.filter(m => displayKey(m) === selectedDisplayKey)
+        : [];
+
+      if (sameNamedCrossGroupMatches.length > display.length) {
+        display = groupAwareDedupe([...sameNamedCrossGroupMatches, ...display]);
+      }
+
+      const possibleGroups = [...new Set(display.map(m => m.group))].sort();
+      const hasCrossGroupAmbiguity = possibleGroups.length > 1;
+
+      summary.innerHTML = `
+        <div class="match ${hasCrossGroupAmbiguity ? "ambiguous" : ""}">
+          <div class="match-head">
+            <div>
+              <h3>Possible group${hasCrossGroupAmbiguity ? "s" : ""}: ${possibleGroups.join(", ")}</h3>
+              <div class="meta">${display.length} likely match${display.length === 1 ? "" : "es"} shown. Same-name entries in different groups are kept for comparison.</div>
+            </div>
+          </div>
+          ${hasCrossGroupAmbiguity ? `<div class="compare-note"><b>Check carefully:</b> this area or a similar area appears under more than one group in the timetable. Compare the listed options and use nearby landmarks to confirm the right one.</div>` : ""}
+          <div class="actions">
+            <button onclick="copyShareText()">Copy schedule</button>
+            <button class="secondary" onclick="downloadImage()">Download schedule image</button>
+          </div>
+        </div>
+        ${display.map(renderMatchCard).join("")}
+      `;
+    }
+
+    function renderMatchCard(match) {
+      const slots = futureSlotsByGroup(match.group);
+      const t = todayToken();
+      const status = groupStatus(match.group);
+      return `
+        <div class="match" data-result-group="${match.group}" data-result-name="${escapeHtml(match.name)}" data-result-region="${escapeHtml(match.region)}">
+          <div class="match-head">
+            <div>
+              <h3>${escapeHtml(match.name)}</h3>
+              <div class="meta">${escapeHtml(match.region)} Region · Group ${match.group}</div>
+            </div>
+            <span class="group-chip">${match.group}</span>
+          </div>
+          <div class="group-status-line ${status.state}"><b>${escapeHtml(status.label)}:</b> ${escapeHtml(status.detail)}</div>
+          <div class="meta future-note">${escapeHtml(futureScheduleLabel())}</div>
+          <div class="schedule">
+            ${slots.length ? slots.map(slot => `
+              <div class="slot ${slot.dateToken === t ? "today" : ""} ${isSlotCurrent(slot) ? "current" : ""}">
+                <strong>${escapeHtml(formatSlotDate(slot).replace(/, /, " · "))}</strong>
+                <span>${escapeHtml(prettyPeriod(slot.period))}</span>
+              </div>
+            `).join("") : `<div class="empty">No current or upcoming dates remain in the published timetable for this group.</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 99) {
+      const words = String(text).split(" ");
+      let line = "";
+      let lines = 0;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + " ";
+        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+          ctx.fillText(line.trim(), x, y);
+          line = words[n] + " ";
+          y += lineHeight;
+          lines++;
+          if (lines >= maxLines - 1) {
+            ctx.fillText((line + words.slice(n + 1).join(" ")).trim().slice(0, 90) + "…", x, y);
+            return y + lineHeight;
+          }
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line.trim(), x, y);
+      return y + lineHeight;
+    }
+
+    function getVisibleResults() {
+      return [...document.querySelectorAll("[data-result-group]")].map(el => ({
+        name: el.getAttribute("data-result-name"),
+        region: el.getAttribute("data-result-region"),
+        group: el.getAttribute("data-result-group")
+      }));
+    }
+
+    function getPrimaryResult() {
+      return getVisibleResults()[0] || null;
+    }
+
+    function uniqueGroupsFromResults(results) {
+      return [...new Set(results.map(r => r.group))].sort();
+    }
+
+    function copyShareText() {
+      const results = getVisibleResults();
+      if (results.length === 0) return;
+
+      const groups = uniqueGroupsFromResults(results);
+      const matchLines = results
+        .map((r, i) => `${i + 1}. ${r.name} - ${r.region} Region - Group ${r.group}`)
+        .join("\n");
+
+      const scheduleText = groups.map(group => {
+        const slots = futureSlotsByGroup(group).map(s => `- ${formatSlotDate(s)}: ${prettyPeriod(s.period)}`).join("\n");
+        return `Group ${group}\n${slots || "- No current or upcoming dates remain in the published timetable for this group."}`;
+      }).join("\n\n");
+
+      const text = `Do I Have Light Ghana lookup\n\nPossible match${results.length === 1 ? "" : "es"}:\n${matchLines}\n\nUpcoming schedule${groups.length === 1 ? "" : "s"}:\n${scheduleText}\n\n${futureScheduleLabel()}\n\nNote: same-name areas can appear under different groups. Compare nearby landmarks before making plans.\n\nBased on the published 800MW load-management timetable.`;
+      navigator.clipboard?.writeText(text);
+      alert("Share text copied.");
+    }
+
+    function legacyDownloadImage() {
+      const results = getVisibleResults();
+      if (results.length === 0) return;
+
+      const groups = uniqueGroupsFromResults(results);
+      const schedulesByGroup = groups.map(group => ({ group, slots: futureSlotsByGroup(group) }));
+      const scheduleHeight = schedulesByGroup.reduce((total, item) => total + 100 + Math.max(1, item.slots.length) * 84, 0);
+      const canvas = document.createElement("canvas");
+      canvas.width = 1200;
+      canvas.height = Math.max(1350, 820 + (results.length * 54) + scheduleHeight);
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#f7f3e9";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const grd = ctx.createRadialGradient(160, 140, 10, 160, 140, 560);
+      grd.addColorStop(0, "rgba(242,201,76,.65)");
+      grd.addColorStop(1, "rgba(242,201,76,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#171717";
+      roundRect(ctx, 72, 72, 1056, canvas.height - 144, 50, true, false);
+
+      ctx.fillStyle = "#f2c94c";
+      ctx.font = "800 38px Arial";
+      ctx.fillText("Do I Have Light Ghana", 120, 150);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 62px Arial";
+      wrapText(ctx, results.length === 1 ? results[0].name : "Possible load-management matches", 120, 260, 920, 70, 3);
+
+      let y = results.length === 1 ? 430 : 360;
+
+      if (results.length === 1) {
+        ctx.fillStyle = "rgba(255,255,255,.72)";
+        ctx.font = "400 31px Arial";
+        ctx.fillText(`${results[0].region} Region`, 120, y);
+        y += 60;
+      } else {
+        ctx.fillStyle = "rgba(255,255,255,.72)";
+        ctx.font = "400 27px Arial";
+        wrapText(ctx, "This area or similar area names may appear under more than one group. Compare the options below and confirm with nearby landmarks.", 120, y, 920, 36, 3);
+        y += 110;
+      }
+
+      ctx.fillStyle = "#f2c94c";
+      roundRect(ctx, 120, y, 310, 118, 30, true, false);
+      ctx.fillStyle = "#171717";
+      ctx.font = "900 54px Arial";
+      ctx.fillText(groups.join(", "), 152, y + 72);
+      ctx.font = "800 22px Arial";
+      ctx.fillText(groups.length === 1 ? "POSSIBLE GROUP" : "POSSIBLE GROUPS", 152, y + 102);
+      y += 168;
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 34px Arial";
+      ctx.fillText("Matching area entries", 120, y);
+      y += 48;
+
+      results.forEach((r, index) => {
+        ctx.fillStyle = "rgba(255,255,255,.08)";
+        roundRect(ctx, 120, y - 30, 920, 48, 16, true, false);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "800 23px Arial";
+        const line = `${index + 1}. ${r.name} - ${r.region} - Group ${r.group}`;
+        wrapText(ctx, line, 145, y, 870, 28, 1);
+        y += 58;
+      });
+
+      y += 22;
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 36px Arial";
+      ctx.fillText(groups.length === 1 ? "Upcoming schedule" : "Upcoming schedules to compare", 120, y);
+      y += 42;
+
+      ctx.fillStyle = "rgba(255,255,255,.62)";
+      ctx.font = "400 22px Arial";
+      wrapText(ctx, futureScheduleLabel(), 120, y, 900, 30, 2);
+      y += 52;
+
+      schedulesByGroup.forEach(item => {
+        ctx.fillStyle = "#f2c94c";
+        roundRect(ctx, 120, y - 38, 145, 58, 18, true, false);
+        ctx.fillStyle = "#171717";
+        ctx.font = "900 29px Arial";
+        ctx.fillText(`Group ${item.group}`, 145, y);
+        y += 50;
+
+        if (!item.slots.length) {
+          ctx.fillStyle = "rgba(255,255,255,.08)";
+          roundRect(ctx, 120, y - 36, 920, 70, 20, true, false);
+          ctx.fillStyle = "rgba(255,255,255,.72)";
+          ctx.font = "400 23px Arial";
+          ctx.fillText("No current or upcoming dates remain in the published timetable for this group.", 150, y);
+          y += 84;
+        } else {
+          item.slots.forEach(slot => {
+            ctx.fillStyle = "rgba(255,255,255,.08)";
+            roundRect(ctx, 120, y - 36, 920, 70, 20, true, false);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "800 25px Arial";
+            ctx.fillText(formatSlotDate(slot).replace(", ", " · "), 150, y);
+            ctx.fillStyle = "rgba(255,255,255,.72)";
+            ctx.font = "400 23px Arial";
+            ctx.fillText(prettyPeriod(slot.period), 520, y);
+            y += 84;
+          });
+        }
+        y += 24;
+      });
+
+      ctx.fillStyle = "rgba(255,255,255,.58)";
+      ctx.font = "400 22px Arial";
+      wrapText(ctx, "Based on the uploaded 800MW Global Load Management timetable. Same-name areas in different groups are shown separately. Confirm official updates before making critical plans.", 120, canvas.height - 110, 900, 30, 3);
+
+      const primary = results[0];
+      const filenameBase = results.length === 1 ? normalise(primary.name).replace(/\s+/g, "-") : "compare-possible-groups";
+      const link = document.createElement("a");
+      link.download = `do-i-have-light-${filenameBase || "result"}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function downloadImage() {
+      const results = getVisibleResults();
+      if (results.length === 0) return;
+
+      const groups = uniqueGroupsFromResults(results);
+      const schedulesByGroup = groups.map(group => ({ group, slots: futureSlotsByGroup(group) }));
+      const visibleResults = results.slice(0, 8);
+      const rowHeight = 78;
+      const scheduleHeight = schedulesByGroup.reduce((total, item) => total + 92 + Math.max(1, item.slots.length) * rowHeight, 0);
+      const resultHeight = visibleResults.length * 54 + (results.length > 8 ? 34 : 0);
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = Math.max(1320, 686 + resultHeight + scheduleHeight);
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const cardX = 64;
+      const cardY = 64;
+      const cardW = width - 128;
+      const cardH = height - 128;
+      const left = cardX + 54;
+      const right = cardX + cardW - 54;
+      const contentW = right - left;
+
+      ctx.fillStyle = "#f8f4e9";
+      ctx.fillRect(0, 0, width, height);
+
+      const bgGlow = ctx.createRadialGradient(120, 80, 10, 120, 80, 640);
+      bgGlow.addColorStop(0, "rgba(15,122,85,.16)");
+      bgGlow.addColorStop(1, "rgba(15,122,85,0)");
+      ctx.fillStyle = bgGlow;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = "#ffffff";
+      roundRect(ctx, cardX, cardY, cardW, cardH, 42, true, false);
+      ctx.strokeStyle = "rgba(23,23,23,.12)";
+      ctx.lineWidth = 2;
+      roundRect(ctx, cardX, cardY, cardW, cardH, 42, false, true);
+
+      const stripeW = cardW / 3;
+      ctx.fillStyle = "#d14a35";
+      roundRect(ctx, cardX, cardY, stripeW, 18, 9, true, false);
+      ctx.fillStyle = "#f2c94c";
+      ctx.fillRect(cardX + stripeW, cardY, stripeW, 18);
+      ctx.fillStyle = "#0f7a55";
+      roundRect(ctx, cardX + stripeW * 2, cardY, stripeW, 18, 9, true, false);
+
+      let y = cardY + 80;
+      ctx.fillStyle = "#0f7a55";
+      ctx.font = "900 30px Arial";
+      ctx.fillText("Do I Have Light?", left, y);
+
+      ctx.fillStyle = "#626262";
+      ctx.font = "600 20px Arial";
+      ctx.fillText("Personal load-management timetable", left, y + 34);
+
+      ctx.fillStyle = "#eef7f2";
+      roundRect(ctx, right - 250, y - 32, 250, 54, 18, true, false);
+      ctx.fillStyle = "#0f7a55";
+      ctx.font = "800 18px Arial";
+      ctx.fillText("Generated: Ghana time", right - 224, y - 9);
+      ctx.font = "700 18px Arial";
+      ctx.fillText(formatGhanaClock(), right - 224, y + 15);
+
+      y += 112;
+      ctx.fillStyle = "#171717";
+      ctx.font = "900 62px Arial";
+      y = wrapText(ctx, results.length === 1 ? results[0].name : "Possible area matches", left, y, contentW - 170, 68, 2);
+
+      if (results.length === 1) {
+        ctx.fillStyle = "#626262";
+        ctx.font = "700 27px Arial";
+        ctx.fillText(`${results[0].region} Region`, left, y + 10);
+        y += 54;
+      } else {
+        ctx.fillStyle = "#626262";
+        ctx.font = "400 24px Arial";
+        y = wrapText(ctx, "Similar area names can appear under different groups. Compare the matches and confirm with nearby landmarks.", left, y + 8, contentW, 34, 3);
+        y += 20;
+      }
+
+      const groupBoxW = Math.max(184, 150 + groups.join(", ").length * 24);
+      ctx.fillStyle = "#f2c94c";
+      roundRect(ctx, right - groupBoxW, cardY + 174, groupBoxW, 118, 28, true, false);
+      ctx.fillStyle = "#171717";
+      ctx.font = "900 56px Arial";
+      ctx.fillText(groups.join(", "), right - groupBoxW + 26, cardY + 244);
+      ctx.font = "800 17px Arial";
+      ctx.fillText(groups.length === 1 ? "LIKELY GROUP" : "POSSIBLE GROUPS", right - groupBoxW + 26, cardY + 274);
+
+      ctx.fillStyle = "#171717";
+      ctx.font = "900 30px Arial";
+      ctx.fillText("Matching area entries", left, y);
+      y += 36;
+
+      visibleResults.forEach((r, index) => {
+        ctx.fillStyle = "#f4f6f1";
+        roundRect(ctx, left, y, contentW, 42, 14, true, false);
+        ctx.fillStyle = "#171717";
+        ctx.font = "800 21px Arial";
+        const line = `${index + 1}. ${r.name} - ${r.region} - Group ${r.group}`;
+        wrapText(ctx, line, left + 24, y + 27, contentW - 48, 26, 1);
+        y += 54;
+      });
+
+      if (results.length > 8) {
+        ctx.fillStyle = "#626262";
+        ctx.font = "700 18px Arial";
+        ctx.fillText(`+ ${results.length - 8} more matches shown on the website`, left + 24, y + 4);
+        y += 32;
+      }
+
+      y += 24;
+      ctx.strokeStyle = "rgba(23,23,23,.12)";
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(right, y);
+      ctx.stroke();
+      y += 54;
+
+      ctx.fillStyle = "#171717";
+      ctx.font = "900 34px Arial";
+      ctx.fillText(groups.length === 1 ? "Upcoming schedule" : "Upcoming schedules to compare", left, y);
+      y += 36;
+
+      ctx.fillStyle = "#626262";
+      ctx.font = "400 20px Arial";
+      y = wrapText(ctx, futureScheduleLabel(), left, y, contentW, 29, 2);
+      y += 26;
+
+      schedulesByGroup.forEach(item => {
+        ctx.fillStyle = "#eaf5ef";
+        roundRect(ctx, left, y, contentW, 56, 18, true, false);
+        ctx.fillStyle = "#0f7a55";
+        ctx.font = "900 25px Arial";
+        ctx.fillText(`Group ${item.group}`, left + 24, y + 36);
+        y += 74;
+
+        if (!item.slots.length) {
+          ctx.fillStyle = "#f4f6f1";
+          roundRect(ctx, left, y, contentW, 64, 16, true, false);
+          ctx.fillStyle = "#626262";
+          ctx.font = "500 20px Arial";
+          ctx.fillText("No current or upcoming dates remain in the published timetable for this group.", left + 24, y + 39);
+          y += rowHeight;
+        } else {
+          item.slots.forEach(slot => {
+            ctx.fillStyle = "#f4f6f1";
+            roundRect(ctx, left, y, contentW, 64, 16, true, false);
+            ctx.fillStyle = "#171717";
+            ctx.font = "900 22px Arial";
+            ctx.fillText(formatSlotDate(slot).replace(", ", " - "), left + 24, y + 39);
+            ctx.fillStyle = "#626262";
+            ctx.font = "700 22px Arial";
+            ctx.fillText(prettyPeriod(slot.period), left + 470, y + 39);
+            y += rowHeight;
+          });
+        }
+        y += 18;
+      });
+
+      const footerY = height - 144;
+      ctx.strokeStyle = "rgba(23,23,23,.12)";
+      ctx.beginPath();
+      ctx.moveTo(left, footerY);
+      ctx.lineTo(right, footerY);
+      ctx.stroke();
+
+      ctx.fillStyle = "#d14a35";
+      roundRect(ctx, left, footerY + 24, 58, 8, 4, true, false);
+      ctx.fillStyle = "#f2c94c";
+      roundRect(ctx, left + 66, footerY + 24, 58, 8, 4, true, false);
+      ctx.fillStyle = "#0f7a55";
+      roundRect(ctx, left + 132, footerY + 24, 58, 8, 4, true, false);
+
+      ctx.fillStyle = "#626262";
+      ctx.font = "400 19px Arial";
+      wrapText(ctx, "Based on the published 800MW Global Load Management timetable. Same-name areas in different groups are shown separately. Confirm official updates before making critical plans.", left, footerY + 62, contentW, 27, 2);
+
+      const primary = results[0];
+      const filenameBase = results.length === 1 ? normalise(primary.name).replace(/\s+/g, "-") : "compare-possible-groups";
+      const link = document.createElement("a");
+      link.download = `do-i-have-light-${filenameBase || "result"}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+
+    function setGeoStatus(message, isError = false) {
+      if (!geoStatus) return;
+      geoStatus.innerHTML = message;
+      geoStatus.style.color = isError ? "#d14a35" : "";
+    }
+
+    function addressCandidates(address) {
+      if (!address) return [];
+      const fields = [
+        address.neighbourhood,
+        address.suburb,
+        address.quarter,
+        address.residential,
+        address.hamlet,
+        address.village,
+        address.town,
+        address.city,
+        address.municipality,
+        address.county,
+        address.state_district,
+        address.state,
+        address.road
+      ];
+      return [...new Set(fields.filter(Boolean).flatMap(value => {
+        const raw = String(value).replace(/Municipal|Municipality|District|Metropolitan|Assembly|Region/gi, " ");
+        return [raw, ...raw.split(/[,-/]/).map(x => x.trim()).filter(x => x.length > 2)];
+      }))];
+    }
+
+    function bestLocationMatches(candidates) {
+      const pool = [];
+      candidates.forEach(candidate => {
+        findMatches(candidate, 10).forEach(match => {
+          pool.push({ ...match, candidate, combinedScore: scoreEntry(match, normalise(candidate)) });
+        });
+      });
+      const deduped = new Map();
+      pool
+        .sort((a, b) => b.combinedScore - a.combinedScore || a.name.localeCompare(b.name))
+        .forEach(item => {
+          const key = ENTRY_KEY(item);
+          if (!deduped.has(key)) deduped.set(key, item);
+      });
+      return [...deduped.values()].slice(0, 6);
+    }
+
+    function renderGpsCandidateResults(matches, readablePlace, accuracy) {
+      const display = groupAwareDedupe(matches).slice(0, 6);
+      const accuracyText = Number.isFinite(accuracy) ? `GPS accuracy: about ${Math.round(accuracy)}m.` : "";
+      input.value = display[0]?.name || "";
+      suggestions.classList.add("hidden");
+
+      summary.innerHTML = `
+        <div class="match">
+          <div class="match-head">
+            <div>
+              <h3>Choose the closest area</h3>
+              <div class="meta">Detected near: ${escapeHtml(readablePlace)}. ${escapeHtml(accuracyText)} GPS can be broad, so confirm the closest area or landmark before using the timetable.</div>
+            </div>
+          </div>
+          <div class="candidate-list">
+            ${display.map((match, index) => `
+              <button class="candidate-choice" type="button" data-gps-index="${index}">
+                <b>${escapeHtml(match.name)}</b>
+                <span>${escapeHtml(match.region)} Region · Group ${match.group}</span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      summary.querySelectorAll("[data-gps-index]").forEach(button => {
+        button.addEventListener("click", () => {
+          const selected = display[Number(button.getAttribute("data-gps-index"))];
+          if (!selected) return;
+          input.value = selected.name;
+          renderResults(selected.name, selected);
+        });
+      });
+    }
+
+    function reverseGeocodeCacheKey(latitude, longitude) {
+      const lat = Number(latitude).toFixed(REVERSE_GEOCODE_PRECISION);
+      const lon = Number(longitude).toFixed(REVERSE_GEOCODE_PRECISION);
+      return `${REVERSE_GEOCODE_CACHE_PREFIX}${lat},${lon}`;
+    }
+
+    function readReverseGeocodeCache(cacheKey) {
+      try {
+        const raw = localStorage.getItem(cacheKey);
+        if (!raw) return null;
+        const cached = JSON.parse(raw);
+        if (!cached || Date.now() - cached.savedAt > REVERSE_GEOCODE_CACHE_MAX_AGE) {
+          localStorage.removeItem(cacheKey);
+          return null;
+        }
+        return cached.place || null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function writeReverseGeocodeCache(cacheKey, place) {
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({
+          savedAt: Date.now(),
+          place
+        }));
+      } catch (error) {
+        // Storage can be blocked in private browsing; the lookup still works without caching.
+      }
+    }
+
+    async function reverseGeocode(latitude, longitude) {
+      const cacheKey = reverseGeocodeCacheKey(latitude, longitude);
+      const cached = readReverseGeocodeCache(cacheKey);
+      if (cached) return cached;
+
+      const params = new URLSearchParams({
+        format: "jsonv2",
+        lat: String(latitude),
+        lon: String(longitude),
+        zoom: "18",
+        addressdetails: "1",
+        "accept-language": "en"
+      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 9000);
+      let response;
+      try {
+        response = await fetch(`${REVERSE_GEOCODE_ENDPOINT}?${params.toString()}`, {
+          headers: {
+            "Accept": "application/json"
+          },
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+      if (!response.ok) throw new Error("Reverse geocoding failed");
+      const place = await response.json();
+      writeReverseGeocodeCache(cacheKey, place);
+      return place;
+    }
+
+    async function useCurrentLocation() {
+      if (!window.isSecureContext) {
+        setGeoStatus("Live location requires HTTPS. Use the deployed Netlify or Cloudflare link, not an insecure preview.", true);
+        return;
+      }
+      if (!navigator.geolocation) {
+        setGeoStatus("Your browser does not support live location lookup. Type your area instead.", true);
+        return;
+      }
+      setGeoStatus("Requesting location permission…");
+      useLocationBtn.disabled = true;
+      navigator.geolocation.getCurrentPosition(async position => {
+        try {
+          const { latitude, longitude, accuracy } = position.coords;
+          setGeoStatus(`Location found. Accuracy: about <strong>${Math.round(accuracy)}m</strong>. Looking up area name…`);
+          const place = await reverseGeocode(latitude, longitude);
+          const candidates = addressCandidates(place.address);
+          const readablePlace = place.display_name || candidates[0] || "your current area";
+          const matches = bestLocationMatches(candidates);
+
+          if (matches.length === 0) {
+            input.value = candidates[0] || "";
+            summary.innerHTML = `<div class="empty">I found your approximate location as <b>${escapeHtml(readablePlace)}</b>, but I could not confidently match it to the published timetable. Try typing a nearby junction, estate, town, or landmark.</div>`;
+            setGeoStatus("Location detected, but no clear schedule match was found. Try a nearby landmark.", true);
+            return;
+          }
+
+          setGeoStatus(`Approximate area detected from GPS: <strong>${escapeHtml(candidates.slice(0, 3).join(", ") || readablePlace)}</strong>. Choose the closest timetable area below.`);
+          renderGpsCandidateResults(matches, readablePlace, accuracy);
+        } catch (error) {
+          setGeoStatus("Location was found, but the area-name lookup failed. Type your area manually for now.", true);
+        } finally {
+          useLocationBtn.disabled = false;
+        }
+      }, error => {
+        const messages = {
+          1: "Location permission was denied. Type your area manually.",
+          2: "Your location could not be determined. Try again or type your area manually.",
+          3: "The location request timed out. Try again or type your area manually."
+        };
+        setGeoStatus(messages[error.code] || "Location lookup failed. Type your area manually.", true);
+        useLocationBtn.disabled = false;
+      }, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 60000
+      });
+    }
+
+    input.addEventListener("input", renderSuggestions);
+    regionFilter?.addEventListener("change", () => {
+      suggestions.classList.add("hidden");
+      input.setAttribute("aria-expanded", "false");
+      if (input.value.trim()) renderResults(input.value);
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        suggestions.classList.add("hidden");
+        input.setAttribute("aria-expanded", "false");
+        renderResults(input.value);
+      }
+      if (event.key === "Escape") {
+        suggestions.classList.add("hidden");
+        input.setAttribute("aria-expanded", "false");
+      }
+    });
+    searchBtn.addEventListener("click", () => {
+      suggestions.classList.add("hidden");
+      input.setAttribute("aria-expanded", "false");
+      renderResults(input.value);
+    });
+    useLocationBtn.addEventListener("click", useCurrentLocation);
+    document.querySelectorAll(".quick-example").forEach(button => {
+      button.addEventListener("click", () => {
+        input.value = button.getAttribute("data-query") || "";
+        suggestions.classList.add("hidden");
+        renderResults(input.value);
+      });
+    });
+    initialiseRegionFilter();
+    renderNowOverview();
+    setInterval(renderNowOverview, 30000);
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".search-wrap")) {
+        suggestions.classList.add("hidden");
+        input.setAttribute("aria-expanded", "false");
+      }
+    });
+  </script>
+</body>
+</html>
