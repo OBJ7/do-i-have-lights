@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Do I Have Light? Ghana Load Management Lookup</title>
-  <meta name="description" content="Search your Ghana location to find your load management group and 6-hour schedule." />
+  <meta name="description" content="Historical Ghana timetable lookup demonstration. Not a live electricity status service." />
   <style>
     :root {
       --bg: #f7f3e9;
@@ -1147,9 +1147,9 @@
       <div>
         <div class="eyebrow">Public load-management lookup</div>
         <h1>Do I have light?</h1>
-        <p>ECG published a week-long load management timetable across several sheets. This tool lets you search your area, confirm your likely group, and download or share a copy of your schedule timetable.</p>
+        <p>This is a historical lookup demonstration using an embedded April–May 2026 timetable. Search an area to explore its listed group. This tool does not measure electricity supply or establish a current schedule.</p>
         <div class="source-strip" aria-label="Timetable information">
-          <span>Personal timetable starts Monday, 27 Apr 2026</span>
+          <span>Historical data: April–May 2026</span>
           <span>Time shown in Ghana time</span>
           <span>Unofficial lookup aid</span>
         </div>
@@ -1159,7 +1159,7 @@
     <section class="panel now-panel" aria-live="polite">
       <div class="now-top">
         <div>
-          <div class="now-kicker"><span class="pulse"></span> Current status from the published timetable</div>
+          <div class="now-kicker"><span class="pulse"></span> Schedule coverage check — not live power status</div>
           <h2 class="now-title" id="nowHeadline">Checking current group status...</h2>
           <p class="now-subtext" id="nowSubtext">This overview updates automatically using Ghana time.</p>
         </div>
@@ -1190,6 +1190,7 @@
             </div>
           </div>
 
+          <p class="small">Optional GPS lookup sends rounded coordinates to OpenStreetMap Nominatim to suggest an area. Your browser asks permission first. You can always search manually.</p>
           <div class="search-wrap">
             <div class="filter-row">
               <label class="sr-only" for="regionFilter">Filter by region</label>
@@ -1295,6 +1296,14 @@
     const todayToken = () => ghanaParts().token;
 
 
+    const DATA_PROVENANCE = Object.freeze({
+      source: "Embedded ECG 800MW timetable transcription; original publication not authenticated in this review",
+      published_at: null,
+      last_checked_at: null,
+      valid_from: "2026-04-25T06:00:00Z",
+      valid_to: "2026-05-02T06:00:00Z",
+      status: "historical_transcription"
+    });
     const GHANA_TIMEZONE = "Africa/Accra";
     const GROUPS = ["A", "B", "C"];
     const PERSONAL_TIMETABLE_START_MS = Date.UTC(2026, 3, 27, 0, 0, 0);
@@ -1383,6 +1392,7 @@
 
     const futureScheduleLabel = () => {
       const p = ghanaParts();
+      if (ghanaNowMs() >= SCHEDULE_TIMELINE.at(-1).endMs) return "Historical timetable only: no current or upcoming slots are covered. Not live electricity status.";
       return `Showing current and upcoming timetable slots from ${p.dd}/${p.mm}/${p.yyyy} Ghana time. Personal schedules start from Monday, 27/04/2026.`;
     };
 
@@ -1424,8 +1434,7 @@
     const nextSlotForGroup = (group, nowMs = ghanaNowMs()) =>
       SCHEDULE_TIMELINE.find(slot => slot.group === group && slot.startMs > nowMs) || null;
 
-    const groupStatus = (group) => {
-      const nowMs = ghanaNowMs();
+    const groupStatus = (group, nowMs = ghanaNowMs()) => {
       const current = SCHEDULE_TIMELINE.find(slot => nowMs >= slot.startMs && nowMs < slot.endMs) || null;
       const next = nextSlotForGroup(group, nowMs);
 
@@ -1454,7 +1463,7 @@
       return {
         state: "unknown",
         label: "OUTSIDE TABLE",
-        main: `Group ${group} status not active in table`,
+        main: `Group ${group}: current schedule unknown`,
         detail: next ? `The next listed outage is ${formatGhanaDateTime(next.startMs)} - ${formatGhanaTime(next.endMs)}.` : "The published timetable does not cover the current time.",
         current: null,
         next
@@ -1483,8 +1492,8 @@
         headline.textContent = `Group ${current.group} is scheduled off now`;
         subtext.textContent = `Groups ${onGroups} are not scheduled off in this slot. Current slot: ${formatGhanaDateTime(current.startMs)} - ${formatGhanaTime(current.endMs)}.`;
       } else {
-        headline.textContent = "No active outage slot found";
-        subtext.textContent = "The published timetable covers 25 Apr - 1 May 2026. Outside that window, users should check the latest official notice.";
+        headline.textContent = "Current schedule unavailable";
+        subtext.textContent = "The embedded table labels 25 Apr–1 May 2026; its final overnight slot ends 2 May at 06:00 Ghana time. It cannot establish a current schedule. Check an official ECG notice before making plans.";
       }
 
       grid.innerHTML = GROUPS.map(group => {

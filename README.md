@@ -1,45 +1,45 @@
 # Do I Have Light?
 
-Do I Have Light? is a fast static lookup tool for Ghana load-management schedules. Users can search for an area or use their location to find the likely ECG group and see the related 6-hour light/off-light schedule.
+A static historical area lookup using an embedded April–May 2026 ECG-labelled timetable. **This is not a live electricity status service or a confirmed current schedule.**
 
-[Live demo](https://obj7.github.io/do-i-have-lights/)
+[Demo](https://obj7.github.io/do-i-have-lights/) · [Case and limitations](docs/case-study.md)
 
-![Do I Have Light homepage](docs/screenshots/do-i-have-lights-home.png)
+## Implemented behavior
 
-## What this project does
+- Area search and region filtering; same-name entries in different groups remain distinguishable.
+- Schedule calculations in Ghana time, with unknown status outside the embedded timeline.
+- Optional browser GPS and OpenStreetMap Nominatim reverse geocoding; manual search remains available.
+- Copyable results and generated timetable images.
+- HTML/CSS/JavaScript with no application build step.
 
-- Searches embedded ECG load-management grouping data by area and region.
-- Shows the current Ghana time and schedule status.
-- Supports location-assisted lookup through browser geolocation.
-- Uses OpenStreetMap reverse geocoding for GPS area names.
-- Produces shareable results for quick public lookup.
-- Ships as a static single-page app with no build step.
+## Source and validity
 
-## Tech stack
+The source contains an ECG-labelled 800MW timetable transcription with date labels 25 April–1 May 2026. The code interprets midnight slots as the following day, ending 2 May at 06:00 Ghana time. The personal schedule view begins 27 April. These are properties of the embedded dataset and calculation, not proof of current official applicability.
 
-- HTML
-- CSS
-- Vanilla JavaScript
-- Browser Geolocation API
-- OpenStreetMap Nominatim reverse geocoding
-- Netlify-style `_headers` security config
+`DATA_PROVENANCE` records that original publication time and verification time are unknown. The original source and current ECG notices were not authenticated in this review. New October 2026 wording makes the historical status explicit rather than extrapolating the timetable indefinitely.
 
-## Data note
-
-The page references the published ECG 800MW load management timetable and grouping file. Personal schedules start from Monday, 27 April 2026.
-
-## Local usage
-
-Open `index.html` directly in a browser, or serve the folder locally:
+## Local use
 
 ```bash
-npx serve .
+python3 -m http.server 8000
 ```
 
-## Deployment
+Open `http://localhost:8000`. Manual search needs no external service. GPS needs browser permission and an external request. Offline logic checks run against the actual page script with minimal DOM doubles:
 
-This project can be deployed as a static site on GitHub Pages, Netlify, Vercel, or any static host. If deploying to Netlify, keep `_headers` in the publish root so the security headers are applied.
+```bash
+node --test tests/core.test.cjs
+```
 
-## Privacy
+Browser regression checks in `tests/browser.cjs` require Playwright and a local Chromium installation:
 
-Location lookup runs in the browser. GPS lookup uses the user's browser permission prompt and sends coordinates to OpenStreetMap Nominatim for reverse geocoding. The app does not require account login, server-side storage, or secret environment variables.
+```bash
+node tests/browser.cjs
+```
+
+## Privacy and limits
+
+GPS sends rounded coordinates to Nominatim and caches returned place data locally. The interface explains the request before it occurs. No account is required. Provider policy compliance and production request rates remain unverified. A schedule match or “not scheduled off” result cannot establish actual supply.
+
+## Verification and contribution
+
+Local logic checks cover fixed date boundaries, unknown state, no match, ambiguous groups, and denied GPS/manual fallback. They use minimal DOM doubles and do not verify visual rendering. The browser suite could not run because Chromium was unavailable. Neither suite authenticates the original dataset or live demo. Documentation and the October 2026 reliability changes were prepared with substantial AI assistance. Prior source history is preserved.
